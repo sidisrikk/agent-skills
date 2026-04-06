@@ -33,10 +33,10 @@ Generate a detailed weekly team update from git commit history, **always grouped
 **Invocation examples:**
 
 ```
-/weekly-review
-/weekly-review --author "author1,author2" --since 2026-03-17 --until 2026-03-27
-/weekly-review --author "all" --since 2026-03-17
-/weekly-review --audience manager
+/git-weekly-report
+/git-weekly-report --author "author1,author2" --since 2026-03-17 --until 2026-03-27
+/git-weekly-report --author "all" --since 2026-03-17
+/git-weekly-report --audience manager
 ```
 
 `--author "all"` includes every committer in the period.
