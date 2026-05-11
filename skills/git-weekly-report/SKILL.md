@@ -1,6 +1,6 @@
 ---
 name: git-weekly-report
-description: Use when user wants git-sourced team update, sprint review, or commit recap. Supports author/date/audience filters. Triggered by: weekly update, team summary, standup, review period, commit digest.
+description: Use when user wants git-sourced team update, sprint review, or commit recap. Supports author/date/audience filters. Triggered by weekly update, team summary, standup, review period, commit digest.
 ---
 
 # Git Weekly Report
@@ -44,13 +44,13 @@ Multi-audience -> comma-sep list -> separate labelled section each, same file.
 
 Validate ALL params before shell use. Fail -> abort + error message.
 
-| Param          | Allowed                                                                                        | Rejection message                                                                  |
-| -------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `--author`     | Each comma-sep name: `^[A-Za-z0-9 ._@-]{1,100}$` or `"all"`                                   | "Invalid author name. Only letters, numbers, spaces, `.`, `_`, `@`, `-` allowed." |
-| `--since`      | Strict ISO: `^\d{4}-\d{2}-\d{2}$`, valid calendar date                                        | "Invalid date format. Use YYYY-MM-DD."                                             |
-| `--until`      | Same as `--since`; must be >= `--since`                                                        | "Invalid date format or end date is before start date."                            |
-| `--output-dir` | Safe relative: `^[A-Za-z0-9_./-]{1,200}$`, no `..`                                            | "Invalid output path. Use a simple relative directory."                            |
-| `--audience`   | Comma-sep; each = `dev`, `manager`, or `stakeholder`; dupes removed                           | "Unknown audience. Choose dev, manager, or stakeholder."                           |
+| Param          | Allowed                                                             | Rejection message                                                                 |
+| -------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `--author`     | Each comma-sep name: `^[A-Za-z0-9 ._@-]{1,100}$` or `"all"`         | "Invalid author name. Only letters, numbers, spaces, `.`, `_`, `@`, `-` allowed." |
+| `--since`      | Strict ISO: `^\d{4}-\d{2}-\d{2}$`, valid calendar date              | "Invalid date format. Use YYYY-MM-DD."                                            |
+| `--until`      | Same as `--since`; must be >= `--since`                             | "Invalid date format or end date is before start date."                           |
+| `--output-dir` | Safe relative: `^[A-Za-z0-9_./-]{1,200}$`, no `..`                  | "Invalid output path. Use a simple relative directory."                           |
+| `--audience`   | Comma-sep; each = `dev`, `manager`, or `stakeholder`; dupes removed | "Unknown audience. Choose dev, manager, or stakeholder."                          |
 
 Author split: split on `,` -> trim -> validate each -> join with `\|`.
 
@@ -99,17 +99,18 @@ Impact: sum insertions+deletions from `--shortstat` -> lines changed + files tou
 
 Theme map:
 
-| Prefix           | Theme                   |
-| ---------------- | ----------------------- |
-| `feat`           | New Features            |
-| `fix`            | Bug Fixes               |
-| `refactor`       | Refactoring             |
-| `chore`, `build` | Infrastructure / Chores |
-| `docs`           | Documentation           |
-| `test`           | Testing                 |
+| Prefix           | Theme                     |
+| ---------------- | ------------------------- |
+| `feat`           | New Features              |
+| `fix`            | Bug Fixes                 |
+| `refactor`       | Refactoring               |
+| `chore`, `build` | Infrastructure / Chores   |
+| `docs`           | Documentation             |
+| `test`           | Testing                   |
 | Merge commits    | note under relevant theme |
 
 Per-theme subsection must state:
+
 1. WHAT (group related commits -> coherent items, not per-commit list)
 2. WHY (infer from messages + context)
 3. Key files/modules
@@ -122,11 +123,13 @@ Multi-audience -> separate section per audience, divider+label, order matches `-
 **`dev`:** No changes. Full tech: paths, scope tags, impact sizes.
 
 **`manager`:**
+
 - Drop scope tags + `Affected:` lines
 - Lead with user-visible outcome ("Login form validation — users see inline errors as they type" not "`[web]` zodResolver added")
 - Keep contributor names + impact sizes
 
 **`stakeholder`:**
+
 - Collapse to 3 bullets: **Shipped** / **In Progress** / **Risks/Blockers**
 - No stats table, no paths, no per-item authors
 - One sentence per bullet, plain business English
