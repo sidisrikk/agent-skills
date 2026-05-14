@@ -1,4 +1,4 @@
-# nestjs-zod-audit — Reference
+# nestjs-zod-swagger-audit — Reference
 
 ## Schema patterns
 

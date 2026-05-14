@@ -1,9 +1,9 @@
 ---
-name: nestjs-zod-audit
+name: nestjs-zod-swagger-audit
 description: Audits NestJS backend controllers and DTOs for nestjs-zod compliance and Swagger decorator completeness. Finds raw @Body/@Query/@Param objects that bypass ZodDto, missing @ApiOperation/@ZodResponse/@ApiResponse/@ApiParam/@ApiQuery/@ApiTags decorators, inline schemas that should live in a shared contracts lib, and auto-generates missing Swagger docs via createZodDto. Use when auditing backend API docs, checking DTO patterns, verifying nestjs-zod compliance, or ensuring Swagger coverage.
 ---
 
-# nestjs-zod-audit
+# nestjs-zod-swagger-audit
 
 See [REFERENCE.md](REFERENCE.md) for full schema/DTO patterns, hard borders, and fix code examples.
 
