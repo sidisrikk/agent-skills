@@ -1,4 +1,4 @@
-# Low Cognitive Guidelines — Examples
+# Low Cognitive Guidelines — Reference
 
 Each principle shown with varied real-world code. Framework used as context illustration only — the principle is universal.
 

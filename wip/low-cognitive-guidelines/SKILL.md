@@ -5,73 +5,36 @@ description: Tiered coding principles that minimize cognitive load on AI agents 
 
 # Low Cognitive Guidelines
 
-Universal coding principles — apply regardless of framework. Full examples → [EXAMPLES.md](EXAMPLES.md)
+Universal coding principles to minimize cognitive load. 
+See [REFERENCE.md](REFERENCE.md) for full code examples.
 
-3 tiers by impact. A = highest, C = optional.
+## Quick start
 
-## Tier A — Blockers (always apply)
+Check code against Tier A Blockers:
+- **Deep Modules**: One call hides complexity inside.
+- **Strong Typing**: Use explicit types, avoid `any` or loose strings.
+- **Consistency**: Use identical return shapes across similar operations.
+- **SRP**: One module, one responsibility.
 
-**1. Deep Modules** — one call hides complexity inside
+## Workflows
 
-- ✅ `userService.create(dto)` — validation, DB write, events all hidden inside
-- ❌ caller assembles: `validate(dto)` → `repo.save()` → `events.emit()` → `mailer.send()`
+### Code Review Workflow
 
-**2. Strong Typing** — explicit types = no guessing
+1. **Check Blockers (Tier A)**: Reject `any` types, multi-job modules, inconsistent return shapes, leaky abstractions. Fix immediately.
+2. **Check Warnings (Tier B)**: Flag side effects in logic fns, silent `return null`, or functions > 100 lines. Fix before shipping.
+3. **Check Suggestions (Tier C)**: Suggest declarative alternatives to imperative loops or mixed data+logic opportunistically.
 
-- ✅ `type UserId = string & { __brand: 'UserId' }` — compiler rejects wrong IDs
-- ❌ `id: string`, `data: any`, untyped params — AI guesses what's valid
+### Implementation Workflow
 
-**3. Consistency** — same shape everywhere → AI predicts accurately
-
-- ✅ every async op returns `Result<T> = { ok: true; data: T } | { ok: false; error: string }`
-- ❌ fn A returns `T | null`, fn B throws, fn C returns `boolean` — no pattern to predict
-
-**4. SRP** — one module, one job → clean context window
-
-- ✅ `parser.ts` parses · `validator.ts` validates · `repository.ts` handles DB — each isolated
-- ❌ `utils.ts` with parse + validate + hash + send email — AI must read all to understand any
-
-## Tier B — Warnings (fix before shipping)
-
-**5. Pure Functions** — no side effects → certain reasoning, easy tests
-
-- ✅ `calculateTotal(items: Item[]): number` — same input always yields same output
-- ❌ fn reads global state / fires analytics / mutates external array — untestable in isolation
-- Rule: side effects at edges only (DB/API/I/O)
-
-**6. Fail-Fast** — explicit errors → fast debug
-
-- ✅ `if (!id) throw new Error('id required, got: ' + JSON.stringify(id))` at fn entry
-- ❌ `return null` on bad input — caller discovers failure 3 layers deep
-- Rule: validate at fn entry, throw immediately, never swallow
-
-**7. Rule of 100** — short fns → AI holds all logic in working memory
-
-- ✅ `parseRow()` → `validateRecord()` → `toDto()` → `save()` — each ≤ 100 lines
-- ❌ 500-line fn: reads file + parses + validates + transforms + saves + notifies
-- Rule: if a section needs a comment to explain it → extract named fn
-
-## Tier C — Suggestions (fix opportunistically)
-
-**8. Declarative Code** — intent readable without tracing logic
-
-- ✅ `users.filter(isActive).map(toDto)` — reads like a description of the result
-- ❌ for-loop + index + nested if + push — must trace line by line to understand
-
-**9. Data / Logic Split** — shapes separate from behavior
-
-- ✅ `types.ts` holds interfaces; `user-service.ts` imports and operates on them
-- ❌ class mixing `id: string` fields + `validate()` + `save()` + `toJSON()` in one place
-
-**10. Law of Demeter** — pass what you need, not the whole world
-
-- ✅ `sendEmail(user.email, user.name)` — fn gets exactly what it uses
-- ❌ `sendEmail(user)` then inside: `user.contact.primary.email`, `user.profile.personal.firstName`
+1. **Design Deep Modules**: Expose a simple interface, hide implementation details inside the module.
+2. **Validate Input (Fail-Fast)**: Validate at function entry, throw explicit typed errors immediately.
+3. **Keep it Short (Rule of 100)**: If a block of code needs a comment to explain it, extract it to a named function.
+4. **Separate Data/Logic**: Define shapes in types/interfaces, keep behavior separate.
 
 ## Review Priority
 
 | Priority   | Tier | Violations                                                                        |
 | ---------- | ---- | --------------------------------------------------------------------------------- |
 | Blocker    | A    | `any` types · multi-job modules · inconsistent return shapes · leaky abstractions |
-| Warning    | B    | side effects in logic fns · `return null` · fn > 50 lines                         |
+| Warning    | B    | side effects in logic fns · `return null` · fn > 100 lines                        |
 | Suggestion | C    | imperative loops · mixed data+logic · deep object chains                          |
