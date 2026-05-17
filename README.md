@@ -6,37 +6,40 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 
 ### 💻 Development & Process
 
-| Skill Name | Description |
-| ---------- | ----------- |
-| **brainstorming** | Explores user intent, requirements, and design before implementation. Mandatory before creative work. |
-| **codebase-cleanup-deps-audit** | Analyzes project dependencies for known vulnerabilities, licensing issues, and outdated packages. |
-| **git-weekly-report** | Generates git-sourced team updates, sprint reviews, or commit recaps based on author, date, and audience. |
-| **karpathy-guidelines** | Behavioral guidelines to reduce common LLM coding mistakes, favoring surgical changes and verifiable criteria. |
-| **naming-analyzer** | Suggests better variable, function, and class names based on context and conventions. |
+| Skill Name                      | Description                                                                                                    |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **brainstorming**               | Explores user intent, requirements, and design before implementation. Mandatory before creative work.          |
+| **codebase-cleanup-deps-audit** | Analyzes project dependencies for known vulnerabilities, licensing issues, and outdated packages.              |
+| **git-weekly-report**           | Generates git-sourced team updates, sprint reviews, or commit recaps based on author, date, and audience.      |
+| **grill-me-finite**             | Interview the user relentlessly about a plan or design until reaching shared understanding.                    |
+| **karpathy-guidelines**         | Behavioral guidelines to reduce common LLM coding mistakes, favoring surgical changes and verifiable criteria. |
+| **manual-migration**            | Generate a prod-safe SQL migration script from a Prisma migration when no prisma CLI access is available.      |
+| **naming-analyzer**             | Suggests better variable, function, and class names based on context and conventions.                          |
 
 ### 📄 Documentation
 
-| Skill Name | Description |
-| ---------- | ----------- |
-| **code-documentation-code-explain** | Transforms difficult concepts into understandable explanations through narratives and visual diagrams. |
-| **markdown-mermaid-writing** | Comprehensive markdown and Mermaid diagram writing standard, including style guides and 9 document templates. |
+| Skill Name                          | Description                                                                                                 |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **code-documentation-code-explain** | Transforms difficult concepts into understandable explanations through narratives and visual diagrams.      |
+| **markdown-mermaid-writing**        | Comprehensive markdown and Mermaid diagram writing standard, including style guides and document templates. |
 
 ### ⚙️ Meta-Skills
 
-| Skill Name | Description |
-| ---------- | ----------- |
+| Skill Name          | Description                                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------------------------- |
 | **normalize-skill** | Improves an existing skill file for cross-project reuse by classifying content and enforcing structure. |
-| **write-a-skill** | Creates new agent skills with proper structure, progressive disclosure, and bundled resources. |
 
-### 💬 Token Optimize
+### 🚧 Work In Progress (WIP)
 
-| Skill Name | Description |
-| ---------- | ----------- |
-| **caveman** | Ultra-compressed communication mode. Cuts token usage ~75% by dropping filler while keeping technical accuracy. |
+| Skill Name                     | Description                                                                                              |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| **low-cognitive-guidelines**   | Tiered coding principles that minimize cognitive load on AI agents (deep modules, strong typing, SRP).   |
+| **nestjs-zod-swagger-audit**   | Audits NestJS backend controllers and DTOs for nestjs-zod compliance and Swagger decorator completeness. |
+| **react-vertical-slice-audit** | Audits React frontend for vertical-slice architecture compliance, enforcing domain boundaries.           |
 
 ## 🚀 How to Use
 
-Each skill is located in its own directory under `skills/`. A standard skill folder contains:
+Each skill is located in its own directory under `skills/` or `wip/`. A standard skill folder contains:
 
 - `SKILL.md`: The core instructions and rules for the agent.
 - `README.md` / `REFERENCE.md`: Supplementary information or references (optional).
