@@ -10,6 +10,7 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **brainstorming**               | Explores user intent, requirements, and design before implementation. Mandatory before creative work.          |
 | **codebase-cleanup-deps-audit** | Analyzes project dependencies for known vulnerabilities, licensing issues, and outdated packages.              |
+| **docker-cve-fix**              | Scans Docker images for CVEs with Trivy and fixes them by ownership: base-image packages vs OS-layer packages. |
 | **git-weekly-report**           | Generates git-sourced team updates, sprint reviews, or commit recaps based on author, date, and audience.      |
 | **grill-me-finite**             | Interview the user relentlessly about a plan or design until reaching shared understanding.                    |
 | **karpathy-guidelines**         | Behavioral guidelines to reduce common LLM coding mistakes, favoring surgical changes and verifiable criteria. |
@@ -21,6 +22,7 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 | Skill Name                          | Description                                                                                                 |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | **code-documentation-code-explain** | Transforms difficult concepts into understandable explanations through narratives and visual diagrams.      |
+| **code-to-prd**                     | Reverse-engineers any codebase into a complete PRD — pages, endpoints, state, and interactions documented.  |
 | **markdown-mermaid-writing**        | Comprehensive markdown and Mermaid diagram writing standard, including style guides and document templates. |
 
 ### ⚙️ Meta-Skills
