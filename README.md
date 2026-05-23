@@ -16,6 +16,7 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 | **karpathy-guidelines**         | Behavioral guidelines to reduce common LLM coding mistakes, favoring surgical changes and verifiable criteria. |
 | **manual-migration**            | Generate a prod-safe SQL migration script from a Prisma migration when no prisma CLI access is available.      |
 | **naming-analyzer**             | Suggests better variable, function, and class names based on context and conventions.                          |
+| **worktime-by-gitlog**           | Estimates time spent on a project by analyzing git commit timestamps and generates an HTML report with Chart.js. |
 
 ### 📄 Documentation
 
