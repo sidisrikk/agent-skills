@@ -4,21 +4,41 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 
 ## 🛠️ Available Skills
 
-### 💻 Development & Process
+### 🗳️ Planning & Feedback
+
+| Skill Name          | Description                                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------------------------- |
+| **brainstorming**   | Explores user intent, requirements, and design before implementation. Mandatory before creative work.    |
+| **grill-me-finite** | Interview the user relentlessly about a plan or design until reaching shared understanding.             |
+
+### 🛡️ Code Quality & Security
 
 | Skill Name                      | Description                                                                                                    |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **brainstorming**               | Explores user intent, requirements, and design before implementation. Mandatory before creative work.          |
 | **codebase-cleanup-deps-audit** | Analyzes project dependencies for known vulnerabilities, licensing issues, and outdated packages.              |
 | **docker-cve-fix**              | Scans Docker images for CVEs with Trivy and fixes them by ownership: base-image packages vs OS-layer packages. |
-| **git-weekly-report**           | Generates git-sourced team updates, sprint reviews, or commit recaps based on author, date, and audience.      |
-| **grill-me-finite**             | Interview the user relentlessly about a plan or design until reaching shared understanding.                    |
-| **karpathy-guidelines**         | Behavioral guidelines to reduce common LLM coding mistakes, favoring surgical changes and verifiable criteria. |
-| **manual-migration**            | Generate a prod-safe SQL migration script from a Prisma migration when no prisma CLI access is available.      |
-| **naming-analyzer**             | Suggests better variable, function, and class names based on context and conventions.                          |
-| **worktime-by-gitlog**           | Estimates time spent on a project by analyzing git commit timestamps and generates an HTML report with Chart.js. |
 
-### 📄 Documentation
+### 📋 Developer Guidelines
+
+| Skill Name              | Description                                                                                                    |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **karpathy-guidelines** | Behavioral guidelines to reduce common LLM coding mistakes, favoring surgical changes and verifiable criteria. |
+| **naming-analyzer**     | Suggests better variable, function, and class names based on context and conventions.                          |
+
+### 📊 Git & Productivity Reports
+
+| Skill Name             | Description                                                                                                    |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **git-weekly-report**  | Generates git-sourced team updates, sprint reviews, or commit recaps based on author, date, and audience.      |
+| **worktime-by-gitlog** | Estimates time spent on a project by analyzing git commit timestamps and generates an HTML report with Chart.js. |
+
+### 🗄️ Database & DevOps
+
+| Skill Name           | Description                                                                                               |
+| -------------------- | --------------------------------------------------------------------------------------------------------- |
+| **manual-migration** | Generate a prod-safe SQL migration script from a Prisma migration when no prisma CLI access is available. |
+
+### 📄 Documentation & Reverse Engineering
 
 | Skill Name                          | Description                                                                                                 |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
