@@ -45,6 +45,7 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 | **code-documentation-code-explain** | Transforms difficult concepts into understandable explanations through narratives and visual diagrams.      |
 | **code-to-prd**                     | Reverse-engineers any codebase into a complete PRD — pages, endpoints, state, and interactions documented.  |
 | **markdown-mermaid-writing**        | Comprehensive markdown and Mermaid diagram writing standard, including style guides and document templates. |
+| **session-wisdom-extractor**        | Extracts knowledge, patterns, and wisdom from AI coding agent interaction histories for educational content.|
 
 ### ⚙️ Meta-Skills
 
