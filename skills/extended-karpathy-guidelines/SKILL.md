@@ -1,10 +1,10 @@
 ---
-name: karpathy-guidelines
+name: extended-karpathy-guidelines
 description: Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.
 license: MIT
 ---
 
-# Karpathy Guidelines
+# Extended Karpathy Guidelines
 
 Behavioral guidelines to reduce common LLM coding mistakes, derived from [Andrej Karpathy's observations](https://x.com/karpathy/status/2015883857489522876) on LLM coding pitfalls.
 
@@ -20,6 +20,7 @@ Before implementing:
 - If multiple interpretations exist, present them - don't pick silently.
 - If a simpler approach exists, say so. Push back when warranted.
 - If something is unclear, stop. Name what's confusing. Ask.
+- Before writing new code, read the module's exports, immediate callers, and shared utilities.
 
 ## 2. Simplicity First
 
@@ -42,6 +43,7 @@ When editing existing code:
 - Don't "improve" adjacent code, comments, or formatting.
 - Don't refactor things that aren't broken.
 - Match existing style, even if you'd do it differently.
+- If you encounter a convention you believe is harmful, flag it — don't silently introduce an alternative.
 - If you notice unrelated dead code, mention it - don't delete it.
 
 When your changes create orphans:
@@ -70,3 +72,16 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+- Tests should fail when business logic changes. If a test can't fail, it's not verifying anything.
+
+## 5. Surface Conflicts, Don't Average Them
+
+**If two patterns contradict, pick one. Don't blend them.**
+
+When existing code contains conflicting patterns (e.g., two auth approaches, two error-handling styles):
+
+- Pick one — prefer the more recent or more tested pattern.
+- Explain why you chose it.
+- Flag the other pattern for cleanup.
+- Never merge conflicting patterns into a hybrid that matches neither.

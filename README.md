@@ -22,7 +22,7 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 
 | Skill Name              | Description                                                                                                    |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **karpathy-guidelines** | Behavioral guidelines to reduce common LLM coding mistakes, favoring surgical changes and verifiable criteria. |
+| **extended-karpathy-guidelines** | Behavioral guidelines to reduce common LLM coding mistakes, favoring surgical changes and verifiable criteria. |
 | **naming-analyzer**     | Suggests better variable, function, and class names based on context and conventions.                          |
 
 ### 📊 Git & Productivity Reports
