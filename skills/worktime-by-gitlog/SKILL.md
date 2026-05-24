@@ -1,6 +1,6 @@
 ---
 name: worktime-by-gitlog
-description: Estimates time spent on a project by analyzing git commit timestamps and generates an HTML report with Chart.js visualizations (accumulated hours line, daily stacked-bar breakdown, session histogram). Use when user asks to calculate, estimate, or visualize time spent on a project, mentions "git time tracking", "how many hours did I work", or wants a time report from git history.
+description: Estimates time spent on a project by analyzing git commit timestamps and generates an HTML report with Chart.js visualizations (accumulated hours lines, daily stacked-bar breakdown, session histogram). Use when user asks to calculate, estimate, or visualize time spent on a project, mentions "git time tracking", "how many hours did I work", or wants a time report from git history. Supports multi-author tracking.
 ---
 
 # Worktime by Gitlog
@@ -10,14 +10,14 @@ description: Estimates time spent on a project by analyzing git commit timestamp
 Replace `<REPO>` with the **absolute path to the target git repository** (i.e. the repo being analyzed, not this skill's directory).
 
 ```bash
-# Basic: all commits
-git -C <REPO> log --format=%at | npx ts-node --skip-project --compiler-options '{"module":"commonjs"}' <SKILL_DIR>/scripts/calculate_time.ts > <REPO>/time_report.html
+# Basic: all commits grouped by author
+git -C <REPO> log --format="%at|%aN" | npx ts-node --skip-project --compiler-options '{"module":"commonjs"}' <SKILL_DIR>/scripts/calculate_time.ts > <REPO>/time_report.html
 
-# Filter by author
-git -C <REPO> log --author="Name" --format=%at | npx ts-node --skip-project --compiler-options '{"module":"commonjs"}' <SKILL_DIR>/scripts/calculate_time.ts > <REPO>/time_report.html
+# Filter by specific author
+git -C <REPO> log --author="Name" --format="%at|%aN" | npx ts-node --skip-project --compiler-options '{"module":"commonjs"}' <SKILL_DIR>/scripts/calculate_time.ts > <REPO>/time_report.html
 
 # Filter by date range
-git -C <REPO> log --after="2025-01-01" --before="2025-06-01" --format=%at | npx ts-node --skip-project --compiler-options '{"module":"commonjs"}' <SKILL_DIR>/scripts/calculate_time.ts > <REPO>/time_report.html
+git -C <REPO> log --after="2025-01-01" --before="2025-06-01" --format="%at|%aN" | npx ts-node --skip-project --compiler-options '{"module":"commonjs"}' <SKILL_DIR>/scripts/calculate_time.ts > <REPO>/time_report.html
 ```
 
 - `git -C <REPO>` ensures git always reads from the target repo regardless of the agent's working directory.
@@ -47,9 +47,9 @@ Open `<REPO>/time_report.html` in a browser. The accumulated total hours are on 
 
 ## Output interpretation
 
-- **Top chart (left axis)**: Daily work hours stacked by session length — shows intensity per day
-- **Top chart (right axis)**: Running total of accumulated hours over the full period
-- **Bottom chart**: Histogram of session lengths — shows typical work patterns
+- **Top chart (left axis)**: Daily work hours stacked by author — shows intensity per day and who contributed
+- **Top chart (right axis)**: Running total of accumulated hours over the full period for each author
+- **Bottom chart**: Histogram of session lengths — shows typical work patterns across all authors
 
 ## Common issues
 

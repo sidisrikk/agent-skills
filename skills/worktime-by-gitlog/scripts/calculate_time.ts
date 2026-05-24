@@ -3,7 +3,7 @@
 /* -------------------------------------------------------------------------- */
 /*                                example input                               */
 /* -------------------------------------------------------------------------- */
-// git log --format=%at | npx ts-node --skip-project --compiler-options '{"module":"commonjs"}' ./calculate_time.ts > time_report.html
+// git log --format="%at|%aN" | npx ts-node --skip-project --compiler-options '{"module":"commonjs"}' ./calculate_time.ts > time_report.html
 // Note: --skip-project prevents a project tsconfig.json from forcing ESM mode, which breaks stdin reading.
 
 // configuration
@@ -25,76 +25,119 @@ async function readStdin(): Promise<string> {
   return Buffer.concat(chunks).toString('utf8');
 }
 
+function getThailandDayStartMs(unixSeconds: number) {
+  const dt = new Date(unixSeconds * 1000);
+  const thailand = new Date(dt.getTime() + 7 * 60 * 60 * 1000);
+  thailand.setUTCHours(0, 0, 0, 0);
+  return thailand.getTime() - 7 * 60 * 60 * 1000;
+}
+
 async function main() {
   const input = await readStdin();
-  const timestamps = input
-    .split('\n')
-    .filter((line) => line.trim() !== '')
-    .map(Number)
-    .sort((a, b) => a - b);
+  const lines = input.split('\n').filter((line) => line.trim() !== '');
 
-  if (timestamps.length === 0) {
-    console.log('No commits found for the specified author.');
+  if (lines.length === 0) {
+    console.log('No commits found.');
     return;
   }
 
-  // --- Chart 1: Time series calculation ---
-  let totalSeconds = 0;
-  let previousTimestamp = 0;
-  const accumulatedHoursData = [];
-  // removed timeOfDayData (scatter) as requested
-
-  for (const currentTimestamp of timestamps) {
-    if (previousTimestamp === 0) {
-      totalSeconds = DEFAULT_COMMIT_SECONDS;
-    } else {
-      const diff = currentTimestamp - previousTimestamp;
-      if (diff <= SESSION_TIMEOUT_SECONDS) {
-        totalSeconds += diff;
-      } else {
-        totalSeconds += DEFAULT_COMMIT_SECONDS;
-      }
+  // Parse and group by author
+  const authorCommits: Record<string, number[]> = {};
+  for (const line of lines) {
+    const parts = line.split('|');
+    const tsStr = parts[0];
+    const author = parts.length > 1 ? parts[1].trim() : 'Unknown';
+    const ts = Number(tsStr);
+    if (!isNaN(ts)) {
+      if (!authorCommits[author]) authorCommits[author] = [];
+      authorCommits[author].push(ts);
     }
-
-    const accumulatedHours = totalSeconds / 3600;
-    const commitDate = new Date(currentTimestamp * 1000);
-    const thailandTime = new Date(commitDate.getTime() + 7 * 60 * 60 * 1000);
-    const commitHour = thailandTime.getUTCHours() + thailandTime.getUTCMinutes() / 60;
-
-    accumulatedHoursData.push({ x: commitDate.getTime(), y: accumulatedHours.toFixed(2) });
-    previousTimestamp = currentTimestamp;
   }
-  totalSeconds += POST_LAST_COMMIT_BUFFER_SECONDS;
 
-  // --- Chart 2: Session Histogram Calculation ---
-  const sessionDurationsMinutes = [];
-  // We'll also collect session objects with start time (timestamp) and duration (minutes)
-  const sessions: { start: number; durationMinutes: number }[] = [];
-  if (timestamps.length > 0) {
+  const allAuthors = Object.keys(authorCommits).sort();
+  
+  if (allAuthors.length === 0) {
+    console.log('No valid commits found.');
+    return;
+  }
+
+  // author -> accumulated line data [{x,y}]
+  const accumulatedHoursDataByAuthor: Record<string, {x: number, y: string}[]> = {};
+  // array of all sessions across all authors (for histogram)
+  const allSessions: { start: number; durationMinutes: number }[] = [];
+  // dayStartMs -> { authorName -> hours }
+  const dayMap: Record<number, Record<string, number>> = {};
+
+  for (const author of allAuthors) {
+    const timestamps = authorCommits[author].sort((a, b) => a - b);
+    
+    let totalSeconds = 0;
+    let previousTimestamp = 0;
+    const accumulatedData = [];
+    
+    // session tracking for this author
     let sessionStartTime = timestamps[0];
     let lastCommitTime = timestamps[0];
 
-    for (let i = 1; i < timestamps.length; i++) {
+    for (let i = 0; i < timestamps.length; i++) {
       const currentTimestamp = timestamps[i];
-      const diffSeconds = currentTimestamp - lastCommitTime;
+      
+      // Calculate accumulated time
+      if (previousTimestamp === 0) {
+        totalSeconds = DEFAULT_COMMIT_SECONDS;
+      } else {
+        const diff = currentTimestamp - previousTimestamp;
+        if (diff <= SESSION_TIMEOUT_SECONDS) {
+          totalSeconds += diff;
+        } else {
+          totalSeconds += DEFAULT_COMMIT_SECONDS;
+        }
+      }
 
-      if (diffSeconds > SESSION_TIMEOUT_SECONDS) {
-        const sessionDurationSeconds = lastCommitTime - sessionStartTime;
-        const durationMinutes = (sessionDurationSeconds + DEFAULT_COMMIT_SECONDS) / 60;
-        sessionDurationsMinutes.push(durationMinutes);
-        sessions.push({ start: sessionStartTime, durationMinutes });
-        sessionStartTime = currentTimestamp;
+      const accumulatedHours = totalSeconds / 3600;
+      const commitDate = new Date(currentTimestamp * 1000);
+      accumulatedData.push({ x: commitDate.getTime(), y: accumulatedHours.toFixed(2) });
+      previousTimestamp = currentTimestamp;
+
+      // Session logic
+      if (i > 0) {
+        const diffSeconds = currentTimestamp - lastCommitTime;
+        if (diffSeconds > SESSION_TIMEOUT_SECONDS) {
+          const sessionDurationSeconds = lastCommitTime - sessionStartTime;
+          const durationMinutes = (sessionDurationSeconds + DEFAULT_COMMIT_SECONDS) / 60;
+          allSessions.push({ start: sessionStartTime, durationMinutes });
+          
+          // Add to daily total for this author
+          const dayStart = getThailandDayStartMs(sessionStartTime);
+          if (!dayMap[dayStart]) dayMap[dayStart] = {};
+          if (!dayMap[dayStart][author]) dayMap[dayStart][author] = 0;
+          dayMap[dayStart][author] += durationMinutes / 60;
+
+          sessionStartTime = currentTimestamp;
+        }
       }
       lastCommitTime = currentTimestamp;
     }
+    
+    totalSeconds += POST_LAST_COMMIT_BUFFER_SECONDS;
+    
+    // Add final session for this author
     const lastSessionDurationSeconds = lastCommitTime - sessionStartTime;
     const lastDurationMinutes = (lastSessionDurationSeconds + DEFAULT_COMMIT_SECONDS) / 60;
-    sessionDurationsMinutes.push(lastDurationMinutes);
-    sessions.push({ start: sessionStartTime, durationMinutes: lastDurationMinutes });
+    allSessions.push({ start: sessionStartTime, durationMinutes: lastDurationMinutes });
+    
+    const dayStart = getThailandDayStartMs(sessionStartTime);
+    if (!dayMap[dayStart]) dayMap[dayStart] = {};
+    if (!dayMap[dayStart][author]) dayMap[dayStart][author] = 0;
+    dayMap[dayStart][author] += lastDurationMinutes / 60;
+    
+    accumulatedHoursDataByAuthor[author] = accumulatedData;
   }
 
+  // --- Histogram Calculation ---
   const bins = { '<30m': 0, '30-60m': 0, '1-2h': 0, '2-3h': 0, '3-4h': 0, '4-5h': 0, '5h+': 0 };
-  for (const duration of sessionDurationsMinutes) {
+  for (const s of allSessions) {
+    const duration = s.durationMinutes;
     if (duration < 30) bins['<30m']++;
     else if (duration < 60) bins['30-60m']++;
     else if (duration < 120) bins['1-2h']++;
@@ -106,57 +149,21 @@ async function main() {
   const histogramData = Object.values(bins);
   const histogramLabels = Object.keys(bins);
 
-  // --- Additional: per-day stacked counts for session-length bins ---
-  // We'll group sessions by Thailand day (UTC timestamp at 00:00 in Thailand timezone)
-  function getThailandDayStartMs(unixSeconds: number) {
-    const dt = new Date(unixSeconds * 1000);
-    // shift to Thailand (UTC+7)
-    const thailand = new Date(dt.getTime() + 7 * 60 * 60 * 1000);
-    thailand.setUTCHours(0, 0, 0, 0);
-    // shift back to UTC ms for consistent x values in Chart.js
-    return thailand.getTime() - 7 * 60 * 60 * 1000;
-  }
-
-  // bins keys to use for stacked bar order (exclude '5h+' misspelling handled below)
-  const stackBinKeys = ['<30m', '30-60m', '1-2h', '2-3h', '3-4h', '4-5h', '5h+'];
-
-  // Map dayStartMs -> total hours per bin
-  const dayMap: Record<number, Record<string, number>> = {};
-  for (const s of sessions) {
-    const dayStart = getThailandDayStartMs(s.start);
-    if (!dayMap[dayStart]) {
-      // initialize totals in hours
-      dayMap[dayStart] = Object.fromEntries(stackBinKeys.map((k) => [k, 0]));
-    }
-    const d = s.durationMinutes;
-    const hours = d / 60;
-    if (d < 30) dayMap[dayStart]['<30m'] += hours;
-    else if (d < 60) dayMap[dayStart]['30-60m'] += hours;
-    else if (d < 120) dayMap[dayStart]['1-2h'] += hours;
-    else if (d < 180) dayMap[dayStart]['2-3h'] += hours;
-    else if (d < 240) dayMap[dayStart]['3-4h'] += hours;
-    else if (d < 300) dayMap[dayStart]['4-5h'] += hours;
-    else dayMap[dayStart]['5h+'] += hours;
-  }
-
-  // Create sorted day array
+  // --- Stacked Bar by Author ---
   const dayStarts = Object.keys(dayMap)
     .map(Number)
     .sort((a, b) => a - b);
 
-  // Prepare dataset arrays for stacked bars
-  const stackedDataByBin: Record<string, Array<{ x: number; y: number }>> = {};
-  for (const key of stackBinKeys) stackedDataByBin[key] = [];
+  const stackedDataByAuthor: Record<string, Array<{ x: number; y: number }>> = {};
+  for (const author of allAuthors) stackedDataByAuthor[author] = [];
 
   for (const day of dayStarts) {
-    for (const key of stackBinKeys) {
-      // round to 2 decimals for hours
-      const val = Math.round((dayMap[day][key] || 0) * 100) / 100;
-      stackedDataByBin[key].push({ x: day, y: val });
+    for (const author of allAuthors) {
+      const val = Math.round((dayMap[day][author] || 0) * 100) / 100;
+      stackedDataByAuthor[author].push({ x: day, y: val });
     }
   }
 
-  // Map dayStart -> sequential day index (1-based) for tick labels
   const dayIndexMap: Record<number, number> = {};
   dayStarts.forEach((d, i) => {
     dayIndexMap[d] = i + 1;
@@ -197,56 +204,69 @@ async function main() {
         <canvas id="histogramChart"></canvas>
     </div>
     <script>
-  const accumulatedHoursData = ${JSON.stringify(accumulatedHoursData)};
+    const accumulatedHoursDataByAuthor = ${JSON.stringify(accumulatedHoursDataByAuthor)};
     const dayIndexMap = ${JSON.stringify(dayIndexMap)};
     const histogramData = ${JSON.stringify(histogramData)};
     const histogramLabels = ${JSON.stringify(histogramLabels)};
+    const stackedDataByAuthor = ${JSON.stringify(stackedDataByAuthor)};
+    const allAuthors = ${JSON.stringify(allAuthors)};
         
-    // Chart 1: Combo Chart with stacked bars for session-length bins (left axis)
+    // Chart 1: Combo Chart with stacked bars for authors (left axis)
     const ctx1 = document.getElementById('commitChart').getContext('2d');
-    const stackedColors = [
-      'rgba(75, 192, 192, 0.9)',
+    const colorPalette = [
       'rgba(54, 162, 235, 0.9)',
+      'rgba(255, 99, 132, 0.9)',
+      'rgba(75, 192, 192, 0.9)',
       'rgba(153, 102, 255, 0.9)',
       'rgba(255, 159, 64, 0.9)',
       'rgba(255, 205, 86, 0.9)',
-      'rgba(201, 203, 207, 0.9)',
-      'rgba(255, 99, 132, 0.9)'
+      'rgba(201, 203, 207, 0.9)'
     ];
+    
+    // Make line colors slightly more opaque
+    const linePalette = colorPalette.map(c => c.replace('0.9)', '1)'));
 
-    const stackedDatasets = Object.keys(${JSON.stringify(stackBinKeys)}).map((_, idx) => null);
-    // Build datasets programmatically so order matches stackBinKeys
-    const stackBinKeys = ${JSON.stringify(['<30m', '30-60m', '1-2h', '2-3h', '3-4h', '4-5h', '5h+'])};
-    const stackedDatasetsFinal = stackBinKeys.map((k, idx) => ({
-      type: 'bar',
-      label: k,
-      data: ${JSON.stringify(stackedDataByBin)}[k] || [],
-      backgroundColor: stackedColors[idx % stackedColors.length],
-      yAxisID: 'y-stacked',
-      stack: 'sessions'
-    }));
+    const datasets = [];
+
+    // Stacked bars (one for each author)
+    allAuthors.forEach((author, idx) => {
+      datasets.push({
+        type: 'bar',
+        label: author + ' (Daily)',
+        data: stackedDataByAuthor[author],
+        backgroundColor: colorPalette[idx % colorPalette.length],
+        yAxisID: 'y-stacked',
+        stack: 'sessions'
+      });
+    });
+
+    // Accumulated lines (one for each author)
+    allAuthors.forEach((author, idx) => {
+      datasets.push({
+        type: 'line',
+        label: author + ' (Accumulated)',
+        data: accumulatedHoursDataByAuthor[author],
+        borderColor: linePalette[idx % linePalette.length],
+        backgroundColor: colorPalette[idx % colorPalette.length],
+        tension: 0.4,
+        pointRadius: 0,
+        yAxisID: 'y-accumulated'
+      });
+    });
 
     new Chart(ctx1, {
-      data: {
-        datasets: [
-          // stacked bar datasets first (appear on left y-axis)
-          ...stackedDatasetsFinal,
-                    // scatter removed
-          // accumulated line on right axis
-          { type: 'line', label: 'Accumulated Work Hours', data: accumulatedHoursData, yAxisID: 'y-accumulated', borderColor: 'rgba(54, 162, 235, 1)', backgroundColor: 'rgba(54, 162, 235, 0.5)', tension: 0.4, pointRadius: 0 }
-        ]
-      },
+      data: { datasets: datasets },
       options: {
         responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
         scales: {
           x: {
             type: 'time',
             title: { display: true, text: 'Workday' },
             time: { unit: 'day', stepSize: 1, displayFormats: { day: 'yyyy-MM-dd' }, tooltipFormat: 'PP' },
             ticks: {
-              callback: function(value, index, ticks) {
+              callback: function(value) {
                 try {
-                  // value may be numeric ms or label; normalize to number
                   let ms = typeof value === 'number' ? value : (this.getLabelForValue ? this.getLabelForValue(value) : value);
                   ms = Number(ms);
                   if (dayIndexMap[ms]) return 'Day ' + dayIndexMap[ms];
@@ -256,30 +276,29 @@ async function main() {
               }
             }
           },
-          // left stacked axis for total hours per day (stacked by session length)
-          'y-stacked': { type: 'linear', position: 'left', beginAtZero: true, title: { display: true, text: 'Total Work Hours per Day (stacked by length)' }, stacked: true },
+          'y-stacked': { type: 'linear', position: 'left', beginAtZero: true, title: { display: true, text: 'Total Work Hours per Day (stacked by Author)' }, stacked: true },
           'y-accumulated': { type: 'linear', position: 'right', beginAtZero: true, title: { display: true, text: 'Accumulated Work Hours' }, grid: { drawOnChartArea: false } }
         }
       }
     });
 
-        // Chart 2: Histogram
-        const ctx2 = document.getElementById('histogramChart').getContext('2d');
-        new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: histogramLabels,
-                datasets: [{
-                    label: 'Number of Sessions',
-                    data: histogramData,
-                    backgroundColor: 'rgba(75, 192, 192, 0.8)'
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true, title: { display: true, text: 'Session Count' } } }
-            }
-        });
+    // Chart 2: Histogram
+    const ctx2 = document.getElementById('histogramChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: histogramLabels,
+            datasets: [{
+                label: 'Number of Sessions',
+                data: histogramData,
+                backgroundColor: 'rgba(75, 192, 192, 0.8)'
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, title: { display: true, text: 'Session Count' } } }
+        }
+    });
     </script>
 </body>
 </html>
