@@ -89,6 +89,12 @@ Prefer Nx tags and `@nx/enforce-module-boundaries` so these rules are enforced b
 
 Define each request/response/job payload once in `libs/schemas/src/lib/<domain>.ts`, export it through the existing library barrels, then reuse it in React Hook Form, TanStack Query, NestJS DTO wrappers, and worker payload validation.
 
+## File Size Rule
+
+Any file under `src/` has a 400-line soft limit and a 800-line hard limit. Past 400 lines, prefer to split the file; past 800 lines, split it before it grows further.
+
+Split by responsibility - extract a hook, sub-component, use-case, port, or schema module - rather than mechanically chunking lines. Never inflate the public `index.ts` barrel to dodge the limit.
+
 ## Common Mistakes
 
 - Do not duplicate DTOs, form types, mutation types, or worker payload types outside `libs/schemas`.
@@ -96,4 +102,5 @@ Define each request/response/job payload once in `libs/schemas/src/lib/<domain>.
 - Do not import from `apps/api` inside `apps/worker` or `apps/web`; share through `libs/*` instead.
 - Do not put business logic in `components/ui`, `libs/utils`, route files, or Nest controllers.
 - Do not flatten Nest slices into `controller + service + dto` when the feature needs domain/use-case/repository separation.
+- Do not let a `src/` file drift past 400 lines without splitting, or exceed 800 lines; extract a unit instead.
 - Do not invent new root folders when an existing `apps/*` or `libs/*` boundary fits.
