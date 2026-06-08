@@ -43,6 +43,7 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 | Skill Name            | Description                                                                                                             |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | **ascii-ui-explorer** | Produces ASCII wireframes for screens, components, flows, states, and responsive variants without implementation code. |
+| **in-html**           | Creates a self-contained HTML artifact for read-only visualization of plans/designs, or an interactive feedback panel.  |
 
 ### 📄 Documentation & Reverse Engineering
 
