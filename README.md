@@ -38,6 +38,12 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 | -------------------- | --------------------------------------------------------------------------------------------------------- |
 | **manual-migration** | Generate a prod-safe SQL migration script from a Prisma migration when no prisma CLI access is available. |
 
+### 🎨 UI Design & Exploration
+
+| Skill Name            | Description                                                                                                             |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **ascii-ui-explorer** | Produces ASCII wireframes for screens, components, flows, states, and responsive variants without implementation code. |
+
 ### 📄 Documentation & Reverse Engineering
 
 | Skill Name                          | Description                                                                                                 |
@@ -51,6 +57,7 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 
 | Skill Name          | Description                                                                                             |
 | ------------------- | ------------------------------------------------------------------------------------------------------- |
+| **init-deep**       | Generates hierarchical `AGENTS.md` files for a repo, including complexity-scored subdirectories.       |
 | **normalize-skill** | Improves an existing skill file for cross-project reuse by classifying content and enforcing structure. |
 
 ### 🚧 Work In Progress (WIP)
