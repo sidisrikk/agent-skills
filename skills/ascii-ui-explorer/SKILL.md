@@ -12,8 +12,10 @@ Standalone design skill. Explore and refine UI ideas in ASCII without implementa
 - Supports screens, components, flows, state views, and responsive variants
 - Broad UI scope with web-first examples
 - Defaults to clear, polished low-to-mid fidelity
+- Cap each response to 1 sketch unless the user asks for more options
+- Stop after 3 refinement rounds; summarize and ask before continuing
 - Uses ASCII-first examples; Unicode box drawing is optional when higher fidelity helps
-- Default width is 100 chars; max 120
+- Default width is 100 chars; max 160 chars when needed for clarity
 
 ## Hard Boundary
 
@@ -29,7 +31,7 @@ If the user asks for implementation:
 Use this skill when the user wants:
 
 - ASCII wireframes or UI sketches
-- 2-3 layout options for a new feature or screen
+- up to 3 layout options for a new feature or screen
 - refinement of an existing mockup
 - empty/loading/error/success state exploration
 - responsive layout variants
@@ -47,15 +49,15 @@ Use this skill when the user wants:
 ## Default Workflow
 
 1. Clarify the goal and constraints.
-2. If the brief is unclear, ask 3-5 high-value questions max.
+2. If the brief is unclear, ask 1-2 targeted questions max.
 3. If the brief is clear, skip questions and start sketching.
 4. State the assumptions that matter.
 5. Pick a mode.
-6. For ambiguous or new problems, show 2-3 materially different options.
+6. For ambiguous or new problems, show up to 3 materially different options; default to 1 if constraints are clear.
 7. For constrained or refinement asks, show one focused option first.
 8. Put every sketch in its own fenced code block.
 9. Recommend one option every time.
-10. Explain the rationale for each option using task clarity, hierarchy, interaction cost, density, responsiveness risk, and state complexity.
+10. Explain the rationale for each option in 1-2 sentences.
 11. End with concrete next-pass prompts.
 
 ## Default Response Shape
@@ -92,14 +94,18 @@ Use this notation by default. Override only when clarity improves.
 - Stay design-only. No code.
 - Make options genuinely different when exploring.
 - Prefer ASCII-first examples; mention Unicode as optional only.
-- Default to 100 chars wide or less. Never exceed 120.
+- Default to 100 chars wide or less. Never exceed 160 chars.
+- Keep each sketch under 40 lines of ASCII.
 - Ask only a small targeted question set before sketching.
 - State assumptions when the brief leaves gaps.
 - Include state variants when async data, user actions, or branching outcomes make them relevant.
 - Offer responsive variants only when requested or clearly relevant.
+- Use only the mode the user requested. Do not chain modes in one response.
 - Always recommend one option.
-- Always explain each option's rationale.
+- Always explain each option's rationale in 1-2 sentences.
+- After 3 refinement rounds, stop and summarize current state before continuing.
 - Always end with concrete refinement moves, not generic feedback asks.
+- Keep prose minimal. Rationale is 1-2 sentences, not paragraphs.
 
 ## Anti-Patterns
 
@@ -109,6 +115,9 @@ Use this notation by default. Override only when clarity improves.
 - Do not skip important states when they matter.
 - Do not ask an interview-length intake before sketching.
 - Do not hide assumptions.
+- Do not invent requirements the user did not state.
+- Do not chain multiple modes in one response.
+- Do not exceed 3 refinement rounds without explicit user go-ahead.
 
 ## Reference Map
 
