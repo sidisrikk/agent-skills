@@ -1,234 +1,91 @@
 ---
 name: planning-and-task-breakdown
-description: Breaks work into ordered tasks. Use when you have a spec or clear requirements and need to break work into implementable tasks. Use when a task feels too large to start, when you need to estimate scope, or when parallel work is possible.
+description: Work breakdown for implementation plans. Use when clear requirements need ordered, verifiable tasks, work is too large for one coherent change, or dependencies and safe parallel work need mapping.
 ---
 
-# Planning and Task Breakdown
+# Work Breakdown
 
-## Overview
+Turn settled requirements into one evidence-backed implementation plan. The plan is a trace from requirements through dependencies to independently verifiable task contracts.
 
-Decompose work into small, verifiable tasks with explicit acceptance criteria. Good task breakdown is the difference between an agent that completes work reliably and one that produces a tangled mess. Every task should be small enough to implement, test, and verify in a single focused session.
+## 1. Establish the Planning Basis
 
-## When to Use
+Read the requirements and inspect the relevant repository code, tests, configuration, documentation, and history before naming implementation details.
 
-- You have a spec and need to break it into implementable units
-- A task feels too large or vague to start
-- Work needs to be parallelized across multiple agents or sessions
-- You need to communicate scope to a human
-- The implementation order isn't obvious
+Record:
 
-**When NOT to use:** Single-file changes with obvious scope, or when the spec already contains well-defined tasks.
+- the goal and observable success;
+- requirements and constraints;
+- explicit exclusions;
+- repository evidence that affects the design; and
+- assumptions, risks, and unresolved questions.
 
-## The Planning Process
+Resolve repository questions through investigation. Ask the user about a missing product decision when different answers would change externally visible behavior. Keep that decision open rather than planning against a guess.
 
-### Step 1: Enter Plan Mode
+**Complete when:** every known requirement and constraint is recorded, every repository claim is grounded in inspected evidence, and every unresolved item is classified as a blocking product decision or an implementation risk.
 
-Before writing any code, operate in read-only mode:
+## 2. Map the Dependency Graph
 
-- Read the spec and relevant codebase sections
-- Identify existing patterns and conventions
-- Map dependencies between components
-- Note risks and unknowns
+List the deliverables and the prerequisites that connect them: contracts, data changes, shared interfaces, migrations, rollout controls, tests, and documentation where applicable. Draw directed dependencies, break cycles, and identify:
 
-**Do NOT write code during planning.** The output is a plan document saved to `tasks/plan.md` and a task list saved to `tasks/todo.md`, not implementation.
+- the critical path;
+- independent branches;
+- high-risk integration seams; and
+- technical uncertainties that repository investigation cannot resolve.
 
-### Step 2: Identify the Dependency Graph
+Turn a genuine technical uncertainty into a discovery task whose acceptance criterion is the evidence or decision needed by later tasks.
 
-Map what depends on what:
+**Complete when:** every deliverable and prerequisite appears in the graph, every ordering constraint has a stated dependency, the graph is acyclic, and the critical path and independent branches are explicit.
 
-```
-Database schema
-    │
-    ├── API models/types
-    │       │
-    │       ├── API endpoints
-    │       │       │
-    │       │       └── Frontend API client
-    │       │               │
-    │       │               └── UI components
-    │       │
-    │       └── Validation logic
-    │
-    └── Seed data / migrations
-```
+## 3. Cut Verifiable Slices
 
-Implementation order follows the dependency graph bottom-up: build foundations first.
+Cut the graph into the smallest coherent outcomes that can be implemented and verified independently. Prefer vertical slices that expose usable behavior through the relevant layers. Use a horizontal foundation task only when multiple slices require the same prerequisite first.
 
-### Step 3: Slice Vertically
+A slice is still too broad when it contains independent outcomes, requires a later task before its acceptance criteria can pass, or cannot leave the repository in a coherent state. Judge size by outcome coherence and verification, not duration or file count. Place risk-reducing slices as early as their dependencies allow.
 
-Instead of building all the database, then all the API, then all the UI — build one complete feature path at a time:
+**Complete when:** every graph node has one owning slice, every slice produces one coherent outcome, and each slice can satisfy its acceptance criteria without implementing a later slice.
 
-**Bad (horizontal slicing):**
-```
-Task 1: Build entire database schema
-Task 2: Build all API endpoints
-Task 3: Build all UI components
-Task 4: Connect everything
-```
+## 4. Write Task Contracts
 
-**Good (vertical slicing):**
-```
-Task 1: User can create an account (schema + API + UI for registration)
-Task 2: User can log in (auth schema + API + UI for login)
-Task 3: User can create a task (task schema + API + UI for creation)
-Task 4: User can view task list (query + API + UI for list view)
-```
-
-Each vertical slice delivers working, testable functionality.
-
-### Step 4: Write Tasks
-
-Each task follows this structure:
+Write each slice as a task with this contract:
 
 ```markdown
-## Task [N]: [Short descriptive title]
+### Task [N]: [Observable outcome]
 
-**Description:** One paragraph explaining what this task accomplishes.
+**Outcome:** [What becomes true]
+
+**Scope:**
+- In: [Required work]
+- Out: [Adjacent work intentionally excluded]
 
 **Acceptance criteria:**
-- [ ] [Specific, testable condition]
-- [ ] [Specific, testable condition]
+- [ ] [Observable condition]
+
+**Implementation landmarks:**
+- [Evidence-backed path, interface, pattern, or migration]
 
 **Verification:**
-- [ ] Tests pass: [the repository's focused-test command]
-- [ ] Build succeeds: [the repository's build command]
-- [ ] Manual check: [description of what to verify]
+- [Exact focused command or check and expected signal]
 
-**Dependencies:** [Task numbers this depends on, or "None"]
-
-**Files likely touched:**
-- `src/path/to/file.ts`
-- `tests/path/to/test.ts`
-
-**Estimated scope:** [Small: 1-2 files | Medium: 3-5 files | Large: 5+ files]
+**Dependencies:** [Task IDs or None]
+**Parallel safety:** [Safe wave, shared seams, or reason it must be sequential]
+**Risks/assumptions:** [Only those that affect execution]
 ```
 
-### Step 5: Order and Checkpoint
+Use exact repository commands when they are discoverable. Use a manual check only for behavior that automated verification cannot observe.
 
-Arrange tasks so that:
+**Complete when:** every task contains each contract field, every acceptance criterion observes that task's outcome, and every implementation landmark comes from repository evidence.
 
-1. Dependencies are satisfied (build foundation first)
-2. Each task leaves the system in a working state
-3. Verification checkpoints occur after every 2-3 tasks
-4. High-risk tasks are early (fail fast)
+## 5. Sequence and Audit
 
-Add explicit checkpoints:
+Topologically order tasks into execution waves. Tasks may share a wave only when they have no dependency between them and their files, contracts, state, and migration order do not create a coordination collision. Name the shared seam when coordination is required.
 
-```markdown
-## Checkpoint: After Tasks 1-3
-- [ ] All tests pass
-- [ ] Application builds without errors
-- [ ] Core user flow works end-to-end
-- [ ] Review with human before proceeding
-```
+Produce one plan with:
 
-## Task Sizing Guidelines
+1. **Planning basis** - goal, scope, evidence, assumptions, and open decisions.
+2. **Dependency map** - nodes, edges, critical path, and risks.
+3. **Execution waves** - ordered task contracts and parallel groups.
+4. **Traceability** - a table mapping every requirement to its tasks and verification.
 
-| Size | Files | Scope | Example |
-|------|-------|-------|---------|
-| **XS** | 1 | Single function or config change | Add a validation rule |
-| **S** | 1-2 | One component or endpoint | Add a new API endpoint |
-| **M** | 3-5 | One feature slice | User registration flow |
-| **L** | 5-8 | Multi-component feature | Search with filtering and pagination |
-| **XL** | 8+ | **Too large — break it down further** | — |
+Return the plan in the response unless the user requested a file path. Keep one plan as the source of truth rather than maintaining a separate summary checklist. For a planning-only request, the plan is the final output. For a direct implementation request, use the plan as the execution order and continue according to the user's request.
 
-If a task is L or larger, it should be broken into smaller tasks. An agent performs best on S and M tasks.
-
-**When to break a task down further:**
-- It would take more than one focused session (roughly 2+ hours of agent work)
-- You cannot describe the acceptance criteria in 3 or fewer bullet points
-- It touches two or more independent subsystems (e.g., auth and billing)
-- You find yourself writing "and" in the task title (a sign it is two tasks)
-
-## Output Files
-
-- **Plan document:** Save the implementation plan to `tasks/plan.md`.
-- **Task list:** Save the checklist-style task list to `tasks/todo.md`.
-
-Create the `tasks/` directory if it does not exist. These paths are the convention expected by the `/build` command and other downstream tooling.
-
-## Plan Document Template
-
-```markdown
-# Implementation Plan: [Feature/Project Name]
-
-## Overview
-[One paragraph summary of what we're building]
-
-## Architecture Decisions
-- [Key decision 1 and rationale]
-- [Key decision 2 and rationale]
-
-## Task List
-
-### Phase 1: Foundation
-- [ ] Task 1: ...
-- [ ] Task 2: ...
-
-### Checkpoint: Foundation
-- [ ] Tests pass, builds clean
-
-### Phase 2: Core Features
-- [ ] Task 3: ...
-- [ ] Task 4: ...
-
-### Checkpoint: Core Features
-- [ ] End-to-end flow works
-
-### Phase 3: Polish
-- [ ] Task 5: ...
-- [ ] Task 6: ...
-
-### Checkpoint: Complete
-- [ ] All acceptance criteria met
-- [ ] Ready for review
-
-## Risks and Mitigations
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| [Risk] | [High/Med/Low] | [Strategy] |
-
-## Open Questions
-- [Question needing human input]
-```
-
-## Parallelization Opportunities
-
-When multiple agents or sessions are available:
-
-- **Safe to parallelize:** Independent feature slices, tests for already-implemented features, documentation
-- **Must be sequential:** Database migrations, shared state changes, dependency chains
-- **Needs coordination:** Features that share an API contract (define the contract first, then parallelize)
-
-## Common Rationalizations
-
-| Rationalization | Reality |
-|---|---|
-| "I'll figure it out as I go" | That's how you end up with a tangled mess and rework. 10 minutes of planning saves hours. |
-| "The tasks are obvious" | Write them down anyway. Explicit tasks surface hidden dependencies and forgotten edge cases. |
-| "Planning is overhead" | Planning is the task. Implementation without a plan is just typing. |
-| "I can hold it all in my head" | Context windows are finite. Written plans survive session boundaries and compaction. |
-
-## Red Flags
-
-- Starting implementation without a written task list
-- Tasks that say "implement the feature" without acceptance criteria
-- No verification steps in the plan
-- All tasks are XL-sized
-- No checkpoints between tasks
-- Dependency order isn't considered
-
-## Verification
-
-Before starting implementation, confirm:
-
-- [ ] Every task has acceptance criteria
-- [ ] Every task has a verification step
-- [ ] Task dependencies are identified and ordered correctly
-- [ ] No task touches more than ~5 files
-- [ ] Checkpoints exist between major phases
-- [ ] The human has reviewed and approved the plan
-
-## See Also
-
-Acceptance criteria are per-task and answer "did we build the right thing?". They sit on top of the project-wide Definition of Done, the standing bar every task clears before it counts as done. See `references/definition-of-done.md`.
+**Complete when:** every requirement maps to at least one task and verification signal, every task maps back to a requirement or prerequisite, dependency order is valid, parallel claims account for coordination collisions, and all blocking decisions are visible before affected work begins.

@@ -1,178 +1,93 @@
 ---
 name: idea-refine
-description: Refines raw ideas into sharp, actionable concepts through structured divergent and convergent thinking. Use when an idea is still vague, when you need to stress-test assumptions before committing to a plan, or when you want to expand options before converging on one. Triggers on "ideate", "refine this idea", or "stress-test my plan".
+description: Refines ideas through a gated funnel. Use when the user brings a raw concept, wants materially different directions, needs to stress-test an idea before planning, or wants a confirmed direction turned into a testable brief.
 ---
 
 # Idea Refine
 
-Refines raw ideas into sharp, actionable concepts worth building through structured divergent and convergent thinking.
+Funnel an idea into a clear user, one job, a riskiest bet, and a cheap test.
 
-## How It Works
+## Route The Entry
 
-1.  **Understand & Expand (Divergent):** Restate the idea, ask sharpening questions, and generate variations.
-2.  **Evaluate & Converge:** Cluster ideas, stress-test them, and surface hidden assumptions.
-3.  **Sharpen & Ship:** Produce a concrete markdown one-pager moving work forward.
+First establish the frame: target user, job or pain, observable success, and binding constraints. Reuse facts the user supplied. Then route the user's most specific requested action:
 
-## Usage
+- A raw or vague concept, or a request for more directions, enters Phase 1.
+- A concrete idea or candidate directions to stress-test enters Phase 2 once the frame is complete; prior variations are optional.
+- A request to sharpen a confirmed option or evidence-gathering test enters Phase 3 only with a decision record: evidence, core bet, riskiest **Must be true** assumption, kill condition, and cheapest test.
 
-This skill is primarily an interactive dialogue. Invoke it with an idea, and the agent will guide you through the process.
+Ask only for missing entry evidence. State the starting phase, then keep the conversation there until its gate passes.
 
-```bash
-# Optional: Initialize the ideas directory
-bash skills/idea-refine/scripts/idea-refine.sh
-```
+## Operating Rules
 
-**Trigger Phrases:**
-- "Help me refine this idea"
-- "Ideate on [concept]"
-- "Stress-test my plan"
+- Ask one highest-value question at a time and wait for the answer.
+- State weak value, high complexity, and unsupported assumptions directly, with the evidence and cheapest next test.
+- For an existing project, inspect relevant architecture, constraints, and prior art with `Glob`, `Grep`, and `Read` before making codebase-specific claims. Cite files that change the options.
+- Evidence is observed behavior, costly commitment, repeated target-user reports, repository or operational facts, or a comparable case. Label its absence **unknown**.
+- End the funnel at an approved one-pager. Implementation and planning are later work.
 
-## Output
+## Phase 1: Frame And Diverge
 
-The final output is a markdown one-pager saved to `docs/ideas/[idea-name].md` (after user confirmation), containing:
-- Problem Statement
-- Recommended Direction
-- Key Assumptions
-- MVP Scope
-- Not Doing list
+Open the idea before narrowing it.
 
-## Detailed Instructions
+1. Restate the idea as **How might we [outcome] for [user] within [constraint]?** Add a one-sentence interpretation.
+2. Resolve the target user, job or pain, observable success, and binding constraints. Ask about prior attempts or urgency only when the answer could change the directions.
+3. When the idea concerns an existing project, inspect the codebase now. Record the files that constrain the options or state that the inspection found none.
+4. Generate 5-8 variations that differ in target user, mechanism, or core bet. For each, name the lens, direction, core bet, and reason it deserves consideration. If fewer than five meet that distinction test, read [`frameworks.md`](frameworks.md) and replace the weak variations.
+5. Ask which variations resonate, which do not, and what the reaction reveals. Wait for the answer.
 
-You are an ideation partner. Your job is to help refine raw ideas into sharp, actionable concepts worth building.
+**Phase 1 gate:** the frame is complete; project-specific claims cite inspected files or an explicit no-constraint result, otherwise repository evidence is marked not applicable; 5-8 variations pass the distinction test and have bets and reasons; and the user has reacted to them.
 
-### Philosophy
+## Phase 2: Evaluate And Converge
 
-- Simplicity is the ultimate sophistication. Push toward the simplest version that still solves the real problem.
-- Start with the user experience, work backwards to technology.
-- Say no to 1,000 things. Focus beats breadth.
-- Challenge every assumption. "How it's usually done" is not a reason.
-- Show people the future — don't just give them better horses.
-- The parts you can't see should be as beautiful as the parts you can.
+Turn the framed idea or the user's reaction into a small set of bets worth testing.
 
-### Process
+1. Form 2-3 meaningful options. Cluster selected variations; for one supplied idea, include the status quo and the smallest credible alternative.
+2. Read [`refinement-criteria.md`](refinement-criteria.md), then assess each option's user value, feasibility, and differentiation. State the strongest evidence or **unknown**, hardest constraint, and reason a user would switch from the current workaround.
+3. For each option, run a pre-mortem across adoption, core mechanism, uncontrolled dependencies, delivery, and constraints. Record a failure for each domain or **none found** with a reason. Convert every failure into an assumption and classify it by consequence:
+   - **Must be true:** if false, the direction fails.
+   - **Should be true:** if false, the approach needs adjustment.
+   - **Might be true:** useful later, but irrelevant to the first test.
+4. Give each option a kill condition and cheapest test. Specify the participant or input, action, time box, and pass/fail threshold.
+5. Recommend either one option or, when none has credible evidence, the evidence-gathering test that resolves the highest-consequence unknown. Explain the decisive trade-off and intentional exclusions, then wait for confirmation.
 
-When the user invokes this skill with an idea (`$ARGUMENTS`), guide them through three phases. Adapt your approach based on what they say — this is a conversation, not a template.
+If none resonate, ask what made them miss. Regenerate only after the answer adds an actionable constraint; replace prior bets rather than repeating them. Return to framing when no actionable constraint emerges.
 
-#### Phase 1: Understand & Expand (Divergent)
+**Phase 2 gate:** 2-3 options are compared on all three criteria; every option has a recorded result for every pre-mortem domain and every failure is classified; each option has at least one **Must be true** assumption, evidence or **unknown**, a kill condition, and a fully specified cheapest test; and the user has confirmed an option or evidence-gathering test.
 
-**Goal:** Take the raw idea and open it up.
+## Phase 3: Sharpen And Ship
 
-1. **Restate the idea** as a crisp "How Might We" problem statement. This forces clarity on what's actually being solved.
+Convert the confirmed option or evidence-gathering test into a testable one-pager.
 
-2. **Ask 3-5 sharpening questions** — no more. Focus on:
-   - Who is this for, specifically?
-   - What does success look like?
-   - What are the real constraints (time, tech, resources)?
-   - What's been tried before?
-   - Why now?
+1. Carry forward the confirmed decision record. Return to Phase 2 for any missing field.
+2. Define the smallest time-boxed experiment around one user job, using the confirmed riskiest assumption and cheapest test.
+3. Make trade-offs visible in a specific **Not Doing** list with a reason for every cut.
+4. Draft:
 
-   Use the `AskUserQuestion` tool to gather this input. Do NOT proceed until you understand who this is for and what success looks like.
+   ```markdown
+   # [Idea Name]
 
-3. **Generate 5-8 idea variations** using these lenses:
-   - **Inversion:** "What if we did the opposite?"
-   - **Constraint removal:** "What if budget/time/tech weren't factors?"
-   - **Audience shift:** "What if this were for [different user]?"
-   - **Combination:** "What if we merged this with [adjacent idea]?"
-   - **Simplification:** "What's the version that's 10x simpler?"
-   - **10x version:** "What would this look like at massive scale?"
-   - **Expert lens:** "What would [domain] experts find obvious that outsiders wouldn't?"
+   ## Problem Statement
+   [One-sentence How Might We statement]
 
-   Push beyond what the user initially asked for. Create products people don't know they need yet.
+   ## Recommended Direction
+   [Direction, evidence, and decisive trade-off]
 
-**If running inside a codebase:** Use `Glob`, `Grep`, and `Read` to scan for relevant context — existing architecture, patterns, constraints, prior art. Ground your variations in what actually exists. Reference specific files and patterns when relevant.
+   ## Key Assumptions To Validate
+   - [ ] [Assumption] - [test] - [pass/fail threshold]
 
-Read `frameworks.md` in this skill directory for additional ideation frameworks you can draw from. Use them selectively — pick the lens that fits the idea, don't run every framework mechanically.
+   ## MVP Scope
+   [One-job experiment, time box, and boundary]
 
-#### Phase 2: Evaluate & Converge
+   ## Not Doing (And Why)
+   - [Cut] - [reason]
 
-After the user reacts to Phase 1 (indicates which ideas resonate, pushes back, adds context), shift to convergent mode:
+   ## Open Questions
+   - [Question that can change the next decision, or None]
+   ```
 
-1. **Cluster** the ideas that resonated into 2-3 distinct directions. Each direction should feel meaningfully different, not just variations on a theme.
+5. Present the draft. Revise it until the user approves the content.
+6. Ask whether to save it. If yes, confirm the exact path, create its parent directory when needed, write the approved draft, and report the path. If no, leave the approved draft in the conversation.
 
-2. **Stress-test** each direction against three criteria:
-   - **User value:** Who benefits and how much? Is this a painkiller or a vitamin?
-   - **Feasibility:** What's the technical and resource cost? What's the hardest part?
-   - **Differentiation:** What makes this genuinely different? Would someone switch from their current solution?
+**Phase 3 gate:** the problem names the user, outcome, and constraint; the recommendation names the choice, evidence, and trade-off; assumptions include the confirmed riskiest bet with its test and threshold; the MVP names one job, time box, boundary, and kill condition; at least one tempting cut has a reason; open questions are decision-changing or explicitly **None**; and the user either declined saving or the saved file contains the approved draft.
 
-   Read `refinement-criteria.md` in this skill directory for the full evaluation rubric.
-
-3. **Surface hidden assumptions.** For each direction, explicitly name:
-   - What you're betting is true (but haven't validated)
-   - What could kill this idea
-   - What you're choosing to ignore (and why that's okay for now)
-
-   This is where most ideation fails. Don't skip it.
-
-**Be honest, not supportive.** If an idea is weak, say so with kindness. A good ideation partner is not a yes-machine. Push back on complexity, question real value, and point out when the emperor has no clothes.
-
-#### Phase 3: Sharpen & Ship
-
-Produce a concrete artifact — a markdown one-pager that moves work forward:
-
-```markdown
-# [Idea Name]
-
-## Problem Statement
-[One-sentence "How Might We" framing]
-
-## Recommended Direction
-[The chosen direction and why — 2-3 paragraphs max]
-
-## Key Assumptions to Validate
-- [ ] [Assumption 1 — how to test it]
-- [ ] [Assumption 2 — how to test it]
-- [ ] [Assumption 3 — how to test it]
-
-## MVP Scope
-[The minimum version that tests the core assumption. What's in, what's out.]
-
-## Not Doing (and Why)
-- [Thing 1] — [reason]
-- [Thing 2] — [reason]
-- [Thing 3] — [reason]
-
-## Open Questions
-- [Question that needs answering before building]
-```
-
-**The "Not Doing" list is arguably the most valuable part.** Focus is about saying no to good ideas. Make the trade-offs explicit.
-
-Ask the user if they'd like to save this to `docs/ideas/[idea-name].md` (or a location of their choosing). Only save if they confirm.
-
-### Anti-patterns to Avoid
-
-- **Don't generate 20+ ideas.** Quality over quantity. 5-8 well-considered variations beat 20 shallow ones.
-- **Don't be a yes-machine.** Push back on weak ideas with specificity and kindness.
-- **Don't skip "who is this for."** Every good idea starts with a person and their problem.
-- **Don't produce a plan without surfacing assumptions.** Untested assumptions are the #1 killer of good ideas.
-- **Don't over-engineer the process.** Three phases, each doing one thing well. Resist adding steps.
-- **Don't just list ideas — tell a story.** Each variation should have a reason it exists, not just be a bullet point.
-- **Don't ignore the codebase.** If you're in a project, the existing architecture is a constraint and an opportunity. Use it.
-
-### Tone
-
-Direct, thoughtful, slightly provocative. You're a sharp thinking partner, not a facilitator reading from a script. Channel the energy of "that's interesting, but what if..." -- always pushing one step further without being exhausting.
-
-Read `examples.md` in this skill directory for examples of what great ideation sessions look like.
-
-## Red Flags
-
-- Generating 20+ shallow variations instead of 5-8 considered ones
-- Skipping the "who is this for" question
-- No assumptions surfaced before committing to a direction
-- Yes-machining weak ideas instead of pushing back with specificity
-- Producing a plan without a "Not Doing" list
-- Ignoring existing codebase constraints when ideating inside a project
-- Jumping straight to Phase 3 output without running Phases 1 and 2
-
-## Verification
-
-After completing an ideation session:
-
-- [ ] A clear "How Might We" problem statement exists
-- [ ] The target user and success criteria are defined
-- [ ] Multiple directions were explored, not just the first idea
-- [ ] Hidden assumptions are explicitly listed with validation strategies
-- [ ] A "Not Doing" list makes trade-offs explicit
-- [ ] The output is a concrete artifact (markdown one-pager), not just conversation
-- [ ] The user confirmed the final direction before any implementation work
+Read [`examples.md`](examples.md) only when the user asks to see an example run.
