@@ -58,7 +58,7 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 
 | Skill Name          | Description                                                                                             |
 | ------------------- | ------------------------------------------------------------------------------------------------------- |
-| **init-deep**       | Generates hierarchical `AGENTS.md` files for a repo, including complexity-scored subdirectories.       |
+| **init-deep**       | Initializes and audits sparse `AGENTS.md` hierarchies for stable intent, local procedures, and guardrails. |
 | **normalize-skill** | Improves an existing skill file for cross-project reuse by classifying content and enforcing structure. |
 
 ### 🚧 Work In Progress (WIP)

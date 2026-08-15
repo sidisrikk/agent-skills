@@ -1,75 +1,95 @@
 ---
 name: init-deep
-description: Generate hierarchical AGENTS.md files with complexity-scored subdirectories. Use when the user wants to initialize or update deep agent documentation or invokes /init-deep.
+description: Initialize, audit, prune, or rebuild sparse hierarchical AGENTS.md files. Use when the user asks to create or refresh repository agent instructions, or invokes /init-deep.
 ---
 
-# /init-deep
+# init-deep
 
-Generate hierarchical `AGENTS.md` files. Root + complexity-scored subdirectories. This skill is designed to be agent and framework agnostic.
+Build an **instruction map**, not a code index.
 
-## Quick start
+## Ownership
 
-```bash
-/init-deep                      # Update mode: modify existing + create new where warranted
-/init-deep --create-new         # Read existing → remove all → regenerate from scratch
-/init-deep --max-depth=2        # Limit directory depth (default: 3)
-```
+| Source          | Owns                                                                                      |
+| --------------- | ----------------------------------------------------------------------------------------- |
+| CodeGraph       | Live topology, symbols, exports, references, call paths, and blast radius                 |
+| `AGENTS.md`     | Stable intent, verified procedures, semantic boundaries, local deviations, and guardrails |
+| Code and config | Authoritative current structure and executable commands                                   |
 
-## Workflows
+When descriptive guidance conflicts with inspected code or config, follow repository state and repair or report the stale claim. Explicit project policy and intent remain authoritative unless the repository provides a newer policy source.
 
-**IMPORTANT**: Track progress in real-time by outputting a Todo list during execution:
+Use repository search when CodeGraph is unavailable, unsupported, or uncertain. The fallback changes discovery mechanics, not content ownership: do not cache structural inventories in `AGENTS.md`.
 
-```json
-[
-  {
-    "id": "discovery",
-    "content": "Fire explore agents + LSP codemap + read existing",
-    "status": "pending",
-    "priority": "high"
-  },
-  {
-    "id": "scoring",
-    "content": "Score directories, determine locations",
-    "status": "pending",
-    "priority": "high"
-  },
-  {
-    "id": "generate",
-    "content": "Generate AGENTS.md files (root + subdirs)",
-    "status": "pending",
-    "priority": "high"
-  },
-  {
-    "id": "review",
-    "content": "Deduplicate, validate, trim",
-    "status": "pending",
-    "priority": "medium"
-  }
-]
-```
+## Inputs
 
-### Phase 1: Discovery + Analysis (Concurrent)
+- Default `update`: refresh qualified locations and report redundant existing children without removing them.
+- `--prune`: in update mode, back up and remove reported redundant children.
+- `--create-new`: read the existing hierarchy, preserve protected content, then rebuild the editable in-scope hierarchy.
+- `--max-depth=N`: limit child placement; default `4`.
 
-- Fire background explore tasks immediately for project structure, entry points, conventions, and anti-patterns.
-- Spawn dynamic background tasks based on project scale (total files, depth, monorepo status).
-- Concurrently in the main session: analyze directory structure, read existing `AGENTS.md` files, and extract LSP codemap data.
-- Collect background results.
+`--prune` is redundant with `--create-new`; ask the user to choose one mode if both are supplied. Files outside the requested root or maximum depth remain untouched.
 
-### Phase 2: Scoring & Location Decision
+Load [REFERENCE.md](REFERENCE.md) before step 1. It owns scope, evidence, activation, placement, protected-content, content-shape, and audit rules.
 
-- Score directories based on file count, code ratio, module boundary, symbol density, export count, etc.
-- Decide where to generate files (always root; score >15 generate; score <8 skip).
+## Workflow
 
-### Phase 3: Generate AGENTS.md
+Track these five steps as live todos. Keep exactly one in progress.
 
-- **Root AGENTS.md**: Generate full overview, structure, code map, conventions, anti-patterns, commands.
-- **Subdirectory AGENTS.md**: Generate in parallel. Never repeat parent content. 30-80 lines max.
+### 1. Fix Scope
 
-### Phase 4: Review & Deduplicate
+Parse mode and depth. Inventory tracked project files, existing instruction files, package or deployable boundaries, command/config sources, and protected regions. Apply reference exclusions, including `.codegraph/`.
 
-- Remove generic advice and parent duplicates from all generated files.
-- Produce a final report of the generated hierarchy.
+Detect CodeGraph availability and index state. Respect pending-file or staleness warnings; do not treat warned results as current evidence.
 
-## Advanced features
+For destructive modes, copy every removable file byte-for-byte to a reported temporary backup immediately before removal. VCS is additional recovery, not a substitute. Complete the protected-content ledger before any removal.
 
-For detailed prompts, scoring matrices, file structure requirements, and strict anti-patterns, see [REFERENCE.md](REFERENCE.md).
+**Complete when:** mode, depth, exclusions, existing hierarchy, protected regions, recoverability, project boundaries, and CodeGraph state are recorded.
+
+### 2. Explore in Parallel
+
+Run four bounded, non-overlapping lanes:
+
+1. semantic package and domain boundaries;
+2. entry points and public surfaces, retaining only stable semantic findings;
+3. commands, CI, tests, migrations, and deployment procedures;
+4. conventions, vocabulary, policy sources, and safety guardrails.
+
+Structural lanes use CodeGraph first. Configuration and policy lanes inspect authoritative files directly. Every delegated lane receives the tool protocol from [REFERENCE.md](REFERENCE.md), including the built-in-read activation requirement and search fallback conditions.
+
+Add package-specific lanes only when the four base lanes cannot cover a major boundary. Merge results after every lane returns.
+
+**Complete when:** every major boundary has evidence-backed coverage, every lane reports inspected scope and unresolved uncertainty, and volatile structural facts are separated from durable instruction candidates.
+
+### 3. Place the Instruction Map
+
+Always select root. Apply the instruction-value gate in [REFERENCE.md](REFERENCE.md) to each eligible child. File count, symbol density, exports, and centrality may prioritize exploration but never justify a child file.
+
+Apply mode behavior:
+
+- `update`: refresh qualifying locations; retain and report redundant existing locations.
+- `update --prune`: refresh qualifying locations; back up and remove redundant locations.
+- `--create-new`: back up and remove every editable, unselected in-scope `AGENTS.md`; rewrite selected locations; leave whole-file-managed locations unchanged.
+
+Put shared rules in the nearest useful ancestor. Select a child only when it adds local behavioral value beyond that ancestor.
+
+**Complete when:** the ledger records `select`, `retain`, `redundant`, or `remove` for every existing and candidate location, with an evidence-backed instruction-value reason.
+
+### 4. Activate and Write Top-Down
+
+Pass the activation gate in [REFERENCE.md](REFERENCE.md) before the first edit or write under each distinct local-instruction boundary. A CodeGraph source result or directory listing does not pass this gate.
+
+Write root first, then independent children in parallel. Preserve protected sections byte-for-byte and honor whole-file ownership markers. Keep each file behavioral and sparse:
+
+- Root: repository contract, semantic boundaries, high-level routing, verified procedures, global conventions, precedence, and hard guardrails.
+- Child: local responsibility, commands, deviations, vocabulary, risks, stable routing, and required verification.
+
+Point to authoritative policy documents instead of copying them. Leave live symbol, topology, caller/callee, export, and implementation-flow inventories to CodeGraph or repository search.
+
+**Complete when:** every selected location has an instruction file, every protected region is unchanged, and every retained line changes agent behavior or materially improves stable routing.
+
+### 5. Audit the Hierarchy
+
+Read the generated hierarchy ancestor-to-child using the built-in file read. Apply every audit in [REFERENCE.md](REFERENCE.md): ownership, evidence, duplication, command validity, protected bytes, activation guidance, unresolved uncertainty, and hierarchy sparsity.
+
+Report mode, depth, CodeGraph status or fallback, analyzed directories, created/updated/removed files, redundant retained locations, protected regions, line counts, hierarchy, backups, and exceptions.
+
+**Complete when:** every generated file passes every audit rule, every reported path exists, and the on-disk hierarchy exactly matches the report.
