@@ -1,66 +1,82 @@
 ---
 name: scrutinize
-description: Outsider-perspective end-to-end review of a plan, PR, or code change. First questions intent and whether a simpler/more elegant approach would achieve the same goal, then traces the actual code path (not just the diff) to verify the change does what it claims. Output is concise, actionable, and every call carries its rationale. Trigger on /scrutinize and proactively whenever the user asks to review, audit, sanity-check, or get a second opinion on a plan, PR, diff, design doc, or proposed code change.
-disable-model-invocation: true
+description: Scrutinizes a plan, design proposal, PR, diff, or code change from an outsider perspective. Use when the user asks for scrutiny or a sanity check of a plan or design, or for an end-to-end second-opinion review of a code change that questions scope as well as correctness.
 ---
 
 # Scrutinize
 
-Stand outside the change and ask whether it should exist at all, then verify it actually does what it claims end-to-end.
+Challenge necessity before correctness, then trace every claim to its observable effect.
 
-## Operating stance
+A **behavioral claim** is an observable outcome or invariant the artifact says will become true. The **review target** is the artifact under review. **Inspection context** is unchanged surrounding code, configuration, tests, and documentation needed to evaluate the target.
 
-- **Outsider.** Forget who wrote it and why they think it's right. Read the artifact cold.
-- **End-to-end, not diff-local.** The diff is the entry point, not the scope. Follow the call graph through real code paths.
-- **Actionable, concise, with rationale.** Every finding states _what to change_, _why_, and _what evidence_ led you there. No filler, no restating the diff back.
+Work read-only. Offer concrete changes in the report; modify files only on a separate user request.
 
-## Workflow
+## 1. Fix the Target and Claims
 
-Run these in order. Do not skip ahead.
+Resolve the review target from the artifact, paths, or Git range the user supplied. Ask for the missing target when none is available.
 
-### 1. Intent — what is this actually trying to do?
+State the intended goal in one sentence. Derive every behavioral claim from the target and identify its expected return value, side effect, or invariant. For a plan, express each proposal as an observable system effect. Label a goal or claim as underspecified when the artifact and available context cannot support a testable interpretation; ask one question that could resolve it.
 
-- State the goal in one sentence, in your own words. If you cannot, the artifact is underspecified — say so and stop.
-- Ask: **is there a simpler, smaller, or more elegant way to achieve the same goal?** Consider:
-  - Doing nothing (is the problem real / load-bearing?).
-  - Using something that already exists in the codebase instead of adding new surface.
-  - A smaller change that solves 90% of the goal with 10% of the risk.
-  - Solving it at a different layer (config vs code, framework vs app, build vs runtime).
-- If a better alternative exists, name it explicitly with rationale. This is the most valuable thing you can output — surface it before the line-by-line review.
+Keep the review target distinct from inspection context. Use context as evidence. Report a context defect only when the target causes it, exposes it, or depends on it.
 
-### 2. Trace — walk the actual code path
+**Complete when:** the target is explicit, the goal is stated, every testable behavioral claim is enumerated, and every material ambiguity is resolved or labeled underspecified.
 
-- For each behavior the change claims, trace the path end-to-end through the real code, not just the lines in the diff:
-  - Entry point → call sites → branches taken → state mutated → exit / return / side effect.
-  - Include the unchanged code on either side of the diff. Bugs hide at the seams.
-- For a plan or design doc: trace the proposed flow against the existing system. Where does it touch reality? What does it assume that isn't true?
-- Note every place the trace surprises you (unexpected branch, dead code reached, state you didn't know existed). Surprises are signal.
+## 2. Challenge the Premise
 
-### 3. Verify — does it actually do what it claims?
+Stand outside the artifact. Establish whether the stated problem is real and whether the target is necessary to solve it. Compare it with:
 
-For each claim the change/plan makes, answer:
+- the status quo or doing nothing;
+- an existing repository capability;
+- the smallest credible change; and
+- a solution at a more appropriate layer, such as configuration, framework, build, or runtime.
 
-- **Does the code path you just traced actually produce that behavior?** Walk it explicitly. "It claims X. Path: A → B → C. At C, [observation]. Therefore [holds / doesn't hold]."
-- **What inputs / states would break it?** Edge cases, concurrent callers, error paths, partial failures, retries, empty/null/unicode/huge inputs, ordering assumptions.
-- **What does it silently change?** Performance, error semantics, observability, contract for other callers, on-disk / on-wire format.
-- **How is it tested?** Do the tests actually exercise the traced path, or do they pass while skipping it (mocks that hide the bug, asserts on intermediate state, happy path only)?
+Judge alternatives by goal coverage, added surface, failure risk, migration cost, and operating cost. Name the simplest credible alternative and the decisive trade-off. When no alternative is better, state why the target earns its complexity.
 
-### 4. Report
+If the user fixes scope explicitly, accept the goal and scrutinize the simplest implementation within that boundary.
 
-Output one tight section per finding. Order by severity (blocker → major → nit). For each:
+**Complete when:** necessity is supported or challenged with evidence, every applicable alternative class has been considered, and the simplest credible approach is identified with its trade-off.
 
-- **Finding** — one sentence, specific. Cite `file:line` when applicable.
-- **Why it matters** — the consequence, not the principle.
-- **Evidence** — the trace step or input that exposes it.
-- **Suggested change** — concrete, minimal.
+## 3. Trace Every Claim
 
-Close with a one-line verdict: ship / fix-then-ship / rework / reject — with the single biggest reason.
+For a code target, trace each claim through the actual path:
 
-## Operating rules
+`entry point -> callers -> branches -> state changes -> return value or side effect`
 
-- **No rubber-stamps.** "LGTM" is not an output. If you genuinely find nothing, say what you traced and what you checked, so the user can judge whether your review covered the surface they cared about.
-- **Cite or it didn't happen.** Every claim about the code references a specific path, file, or line. No vague "this might break under load."
-- **Distinguish claim from verification.** "The PR says X" and "I traced X and confirmed / refuted it" are different — keep them separate in the output.
-- **One simpler-alternative pass is mandatory.** Even on small changes, spend one breath asking if the whole thing is necessary. Skip only if the user explicitly says "don't question scope."
-- **Don't pad with style nits when there's a structural problem.** If step 1 or step 2 surfaces a real issue, lead with it; defer nits or drop them.
-- **No flattery, no hedging.** "This is a great PR but..." adds nothing. State the finding.
+Inspect unchanged seams around the target, including error handling, tests, configuration, persistence, and external contracts when they affect the path. Record concrete symbols and locations. Treat surprises as leads to verify, not findings by themselves.
+
+For a plan or design:
+
+- In an existing system, map each proposed step to current integration points, ownership, state, lifecycle, and contracts.
+- Without an inspectable system, trace the described actors, components, data, errors, and effects. Label dependencies that supplied evidence cannot ground as assumptions.
+
+**Complete when:** every claim has an entry-to-effect trace, or an explicit evidence gap names the missing link and why it prevents verification.
+
+## 4. Try to Break the Claims
+
+For every claim, record `holds`, `fails`, or `unverified` from the trace. Test applicable counterexamples: boundary inputs, empty or missing state, error paths, partial failure, retries, concurrency, ordering, scale, and hostile input.
+
+Check for silent changes to contracts, error semantics, persistence or wire formats, performance, security boundaries, and observability. Inspect whether tests exercise the traced path and its material failure modes rather than only intermediate state or mocked substitutes.
+
+Turn a failed claim or material regression into a finding. Keep an evidence gap as `unverified`; uncertainty is not proof of failure.
+
+**Complete when:** every claim has one result backed by a trace, every applicable counterexample class has a recorded outcome, and test coverage is confirmed or its exact gap is named.
+
+## 5. Report the Decision
+
+Lead with a materially better alternative when one exists. Then order findings by severity: `blocker`, `major`, `minor`, `nit`. Omit style nits that do not affect the decision.
+
+Use one compact section per finding:
+
+```markdown
+### [severity] Finding — path:line
+
+**Why it matters:** [concrete consequence]
+**Evidence:** [claim, trace, and exposing input or state]
+**Suggested change:** [smallest credible remediation]
+```
+
+For plan findings, cite the plan section and repository evidence or unsupported assumption. Separate what the artifact claims from what the trace verifies. Every code claim cites a concrete path, symbol, or line.
+
+If there are no findings, list the claims and traces checked so coverage remains visible. Close with one verdict — `ship`, `fix-then-ship`, `rework`, or `reject` — and the decisive reason.
+
+**Complete when:** every failed claim and material regression is represented by an evidence-backed finding, every unverified claim is visible, coverage is stated, and the verdict follows from the reported evidence.
