@@ -1,6 +1,6 @@
 ---
 name: manual-migration
-description: Generate a prod-safe SQL migration script from a Prisma migration. Use when you need to deploy a Prisma migration to a production database that only accepts raw SQL (no prisma CLI access). Trigger phrases: "generate manual migration", "manual migrate", "prod sql script", "can't use prisma cli on prod".
+description: Generate a prod-safe SQL migration script from a Prisma migration. Use when you need to deploy a Prisma migration to a production database that only accepts raw SQL (no prisma CLI access). Trigger phrases "generate manual migration", "manual migrate", "prod sql script", "can't use prisma cli on prod".
 ---
 
 # Manual Migration Skill
