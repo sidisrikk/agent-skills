@@ -1,24 +1,24 @@
 # Pragmatist
 
-Stress-test design fit: determine whether the code remains understandable, operable, and economical under realistic change.
+Stress-test design fit: will the code remain understandable, operable, and economical under likely change?
 
 ## Inspect
 
-- Accidental complexity, premature abstractions, over-engineering, and APIs wider than necessary.
-- Leaky abstractions, misleading names, or contracts requiring callers to understand internal implementation.
-- Silent failures, unsafe fallback defaults, blind retries, and missing diagnostic context.
-- High-value test gaps: missing regression coverage, missing error-path tests, and fragile mocks.
-- Coupling, architectural layering violations, and domain logic tangled with transport or infrastructure code.
-- Hardcoded configuration, unobservable state transitions, dead scaffolding, and stale documentation.
+- Accidental complexity, premature abstraction, and APIs wider than the use case.
+- Misleading names or contracts that force callers to know internals.
+- Hidden failures, unsafe fallbacks, retries, and weak diagnostics.
+- High-value test gaps, especially missing regression and contract coverage.
+- Coupling, layering violations, and business logic trapped in transport or infrastructure code.
+- Hardcoded environments, poor observability, dead scaffolding, and misleading required documentation.
 
-Focus exclusively on concrete maintenance and operational costs. Route current logic errors to the [Auditor](auditor.md) and security threats to the [Adversary](adversary.md).
+Keep the lens on concrete future cost. Route present logic failures to the Auditor and hostile abuse to the Adversary.
 
 ## Finding gate
 
-Name a concrete future change, failure mode, or operational incident and demonstrate how this design makes remediation disproportionately costly. Discard subjective aesthetic preferences lacking tangible cost.
+Name the likely change or incident and explain why this design makes it disproportionately expensive. A style preference without a concrete cost is not a finding.
 
 ## Severity
 
-- `critical`: Design flaw creates severe operational risk or structural debt that blocks immediate shipment.
-- `warning`: Localized but credible maintenance overhead or operational fragility requiring near-term remediation.
-- `info`: Non-urgent design improvement or cleanup opportunity with zero release impact.
+- `critical`: the design is untenable or creates a near-term operational or change risk serious enough to block shipment.
+- `warning`: a localized, credible maintenance or operational cost should be addressed soon.
+- `info`: a useful improvement with low urgency and no release impact.

@@ -1,24 +1,24 @@
 # Adversary
 
-Threat-model the target: determine what a hostile caller, malicious input, compromised dependency, or adversarial environment can induce.
+Threat-model the code: what can a hostile caller, input, dependency, or environment make it do?
 
 ## Inspect
 
-- Injection (SQL, command, code), path traversal, unsafe deserialization, and output-encoding flaws.
-- Authentication, authorization bypass, session hijacking, token mishandling, and tenant isolation leaks.
-- Secret leakage, credential exposure, and sensitive data mishandling.
-- Cryptographic weaknesses, predictable randomness, nonce reuse, and timing side-channels.
-- Resource exhaustion, unmetered loops/allocations, and algorithmic denial of service.
-- Trust-boundary validation gaps, security-sensitive race conditions (TOCTOU), and supply-chain vulnerabilities.
+- Injection, traversal, unsafe deserialization, and output-context mistakes.
+- Authentication, authorization, session, token, and tenant-boundary failures.
+- Secret or sensitive-data exposure.
+- Cryptography, randomness, nonce, and timing mistakes.
+- Resource exhaustion, rate limits, and algorithmic denial of service.
+- Trust-boundary validation, security-sensitive races, and visible supply-chain hazards.
 
-Focus exclusively on realistic exploitability. Route ordinary logic bugs to the [Auditor](auditor.md) and future architectural cost to the [Pragmatist](pragmatist.md).
+Keep the lens on realistic abuse. Route ordinary logic failures to the Auditor and future maintenance cost to the Pragmatist.
 
 ## Finding gate
 
-Specify the attacker profile, controlled input/vector, vulnerable sink/boundary, and resulting unauthorized capability. Discard theoretical concerns lacking a coherent attack path.
+State the attacker, controlled input or action, sink or trust boundary, and resulting capability. A concern without a coherent attack path is not a finding.
 
 ## Severity
 
-- `critical`: Directly exploitable by a remote or lower-privilege actor with material impact.
-- `warning`: Exploitation requires significant preconditions, or a secondary defense boundary is absent.
-- `info`: No immediate exploit path exists, but an identifiable threat-model change would enable one.
+- `critical`: exploitable now by a remote or lower-privilege actor with material impact.
+- `warning`: exploitation has a meaningful precondition, or a concrete boundary is insufficiently defended.
+- `info`: no current exploit exists, but a named threat-model change would expose one.
