@@ -86,58 +86,55 @@ When the user explicitly requests two rounds, cross-review, or a deep adverse re
 
 Apply these rules in order:
 
-1. Merge findings only when they identify the same root cause at the same location; preserve every reporter and distinct trace that demonstrates the cause. Record failed claims omitted by a reviewer under unresolved questions.
+1. Merge findings only when they identify the same root cause at the same location; preserve every reporter and distinct trace that demonstrates the cause. Record failed claims omitted by a reviewer under `Not checked:`.
 2. Mark a finding **disputed** when a round-two challenge cites concrete contradictory evidence. Record unsupported challenges as excluded rather than changing confidence.
 3. Otherwise mark a finding **cross-validated** when at least two lenses found it independently, or another lens validates it in round two.
 4. Mark every other actionable finding **solo**.
-5. Exclude only contract-invalid outputs, recording each exclusion and reason under unresolved questions.
-6. Sort actionable findings by confidence (`cross-validated`, `solo`), severity (`critical`, `warning`, `info`), then location. Sort disputed findings separately by severity and location.
+5. Exclude only contract-invalid outputs, recording each exclusion and reason under `Not checked:`.
+6. Group actionable findings by severity: **Must fix** (`critical`), **Should fix** (`warning`), **Nice to have** (`info`). Within a group, sort by confidence (`cross-validated`, `solo`), then location. Put disputed findings in a separate **Disputed** group, sorted by severity, then location.
 
 Derive the verdict mechanically:
 
-- `BLOCK`: at least one non-disputed critical finding.
-- `SHIP WITH CAVEATS`: at least one non-disputed warning and no non-disputed critical finding.
-- `SHIP`: no non-disputed critical or warning findings.
+- `fix <numbers> first`: at least one non-disputed critical finding; list every Must fix number.
+- `ship with caveats <numbers>`: at least one non-disputed warning and no non-disputed critical finding; list every Should fix number.
+- `Ship`: no non-disputed critical or warning findings.
+
+Write the report in very simple English: short sentences, everyday words. Explain a technical term the first time you use it. The reader may never have seen this code. Number findings across all groups, so the user can say "fix 2 and 5". Skip empty groups. Every finding has all four parts, each one or two short sentences; **Problem** must name the concrete input or state and the path it takes to the wrong result, drawn from the reviewers' traces.
 
 Use this report shape:
 
 ```markdown
-# Adverse Review
+What this change does: two or three sentences.
 
-**Target:** ...
-**Inspection context:** ...
-**Verdict:** SHIP | SHIP WITH CAVEATS | BLOCK
-**Review health:** complete | degraded | aborted
+Panel: Auditor <verdict>, Adversary <verdict>, Pragmatist <verdict>. Health: complete | degraded.
 
-## Reviewer Summaries
+**Must fix**
 
-...
+1. **Orders land on the wrong day** (`billing/close_day.py:L40-52`) · cross-validated: Auditor, Adversary
+   - **What this is:** At midnight this job closes the day and bills all orders of that day.
+   - **Problem:** It takes "today" from the server clock, which runs in UTC. An order placed at 00:30 in Berlin goes `close_day()` -> `bill(today)` and is billed on the day before.
+   - **Fix:** Compute the day once in the shop's time zone. One line, nothing else changes.
+   - **If we skip it:** Late orders show the wrong date, and accounting fixes them by hand.
 
-## Findings
+**Should fix**
 
-### [cross-validated|solo] [critical|warning|info] Title - path:line
+2. ...same four parts... · solo: Pragmatist
 
-Reporters: ...
-Traces: [reporters] entry -> effect; ...
-Mechanism: ...
-Impact: ...
-Fix: ...
+**Nice to have**
 
-## Disputed Findings
+3. ...
 
-### [disputed] [critical|warning|info] Title - path:line
+**Disputed** (round two only)
 
-Reporters: ...
-Traces: [reporters] entry -> effect; ...
-Challenge evidence: ...
-Mechanism: ...
-Impact: ...
-Fix: ...
-...section only for round two...
+4. **Title** (`path:line`) · disputed: reported by Adversary, challenged by Auditor
+   - ...same four parts...
+   - **Challenge:** the contradicting evidence in one or two sentences.
 
-## Unresolved Questions
-
-...only when needed...
+Verdict: Ship. | Verdict: ship with caveats 2. | Verdict: fix 1 first.
+Lean: -<N> lines possible.   (only when findings remove code)
+Not checked: one line per unresolved question, omitted claim, or excluded review, with its reason.
 ```
 
-Synthesis is complete only when every returned finding is merged, listed, disputed, or excluded with a reason.
+Nothing found: `What this change does:`, the `Panel:` line, then `Looks good. Ship.` and one line on what the panel checked. An aborted run reports the failed reviewers and why instead of findings and verdict.
+
+Synthesis is complete only when every returned finding is merged, numbered, disputed, or excluded with a reason under `Not checked:`. The report lists findings and changes no code.
