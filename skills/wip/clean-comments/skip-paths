@@ -1,0 +1,13 @@
+# Paths clean-comments never scans or edits. gitignore syntax, relative to the repo root.
+# Every .gitignore (all levels), .ignore and .rgignore is already honoured; list only tracked paths here.
+
+# Vendored skills (skills-lock.json) and their symlink; hidden dirs are skipped unless passed as scope.
+.agents/
+.claude/
+# Applied Prisma migrations: Prisma checksums each file, so any edit breaks `migrate deploy`.
+libs/db/prisma/migrations/
+# Test data and API collections: their comments are fixture content.
+tools/fixtures/
+bruno/
+# Feeds commented-out imports to the parser on purpose.
+tools/architecture/module-graph.test.ts
