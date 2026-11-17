@@ -1,29 +1,25 @@
 ---
 name: split-commits
-description: Cut working-tree changes or unpushed commits into commits by one split rule (context, kind, layer, feature, refactor-first, mechanical, atomic), after a preview you approve.
-disable-model-invocation: true
+description: Cut working-tree changes or unpushed commits into commits by one split rule (context, kind, layer, feature, refactor-first, mechanical, atomic) with a rollback receipt. Use autonomously at task end or when asked to split, re-cut (`redo`), or `preview` commits.
 ---
 
 # Split commits
 
-A **split rule** cuts one change into commits; each commit is one **slice** of that rule. Pick the rule for the question `git log` must answer later.
+A **split rule** cuts one change into commits; each commit is one **slice** of that rule. Pick the rule for the question `git log` must answer later. Default to autonomous 1-pass execution and print a safe undo receipt.
 
-Arguments: a rule from [Split rules](#split-rules), plus `redo` to re-cut unpushed commits. With no rule, recommend one and ask.
+Arguments: an optional rule from [Split rules](#split-rules) (defaults to `context` when uncertain), `redo` to re-cut unpushed commits, and `preview` to stop for approval before committing.
 
 ## Steps
 
-1. **Preview.** List the changes. For `redo`, propose the base (the parent of the oldest commit to re-cut) and confirm `git branch -r --contains` is empty for every commit after it. Mark anything you did not make this session as **owner's work**. Assign every file, or hunk, to exactly one slice; order slices so contracts come before their callers. Show:
-   - a matrix: slices of the chosen rule × slices of the closest alternative rule, cells = file counts;
-   - the planned `git log --oneline` with messages and file counts.
+1. **Plan & guard.** List the changes. For `redo`, pick the base (parent of the oldest commit to re-cut) and hard-stop if `git branch -r --contains` is non-empty for any commit after it. Mark changes not made this session as **owner's work**, and keep owner's work plus mixed files unstaged. Assign each remaining file to one slice, ordering contracts before their callers.
+   - If `preview` is set: print the planned `git log --oneline` with file counts, ask whether owner's work or mixed hunks join a slice, and stop for approval.
+   _Done when_ every session file belongs to one slice (and `preview` is approved, if set).
 
-   Ask whether owner's work joins a slice. Stop for approval.
-   _Done when_ the user approves the preview.
+2. **Commit.** Record `HEAD` as the **restore point**. For `redo`, run `git reset --soft <base>`. Commit each slice in order with `git commit -- <paths>` (or `git apply --cached` for approved `preview` hunks).
+   _Done when_ every planned slice is a commit.
 
-2. **Commit.** Record the current tip as the **restore point**. For `redo`, run `git reset --soft <base>`. Commit each slice in preview order with `git commit -- <paths>`; stage a split file's hunks with `git apply --cached`.
-   _Done when_ every approved slice is a commit.
-
-3. **Verify.** For `redo`, `git diff --quiet <restore point> HEAD` passes: the tree is unchanged. The working tree holds only owner's work kept out. Each commit's file set matches the preview. For `atomic`, run the narrowest check at each commit with `git rebase --exec`.
-   _Done when_ every check passes, or the failure is reported with `git reset --hard <restore point>` as the way back.
+3. **Verify & receipt.** For `redo`, confirm `git diff --quiet <restore point> HEAD` passes. Confirm owner's work remains untouched in the working tree and each commit matches its slice. For `atomic`, run the narrowest check at each commit with `git rebase --exec`. Print the receipt: rule used, `git log --oneline` of the new commits, any unstaged files left behind, and `git reset <restore point>` to undo safely.
+   _Done when_ all checks pass and the receipt is printed—or on failure, abort any active rebase, run `git reset <restore point>`, and report the error.
 
 ## Split rules
 
