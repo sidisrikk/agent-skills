@@ -11,11 +11,11 @@ Arguments: an optional rule from [Split rules](#split-rules) (defaults to `conte
 
 ## Steps
 
-1. **Plan & guard.** List the changes. For `redo`, pick the base (parent of the oldest commit to re-cut) and hard-stop if `git branch -r --contains` is non-empty for any commit after it. Mark changes not made this session as **owner's work**, and keep owner's work plus mixed files unstaged. Assign each remaining file to one slice, ordering contracts before their callers.
+1. **Plan & guard.** List the changes. For `redo`, pick the base (parent of the oldest commit to re-cut) and hard-stop if `git branch -r --contains` is non-empty for any commit after it. When invoked at task end, mark changes not made this session as **owner's work** and keep owner's work plus mixed files unstaged; when invoked directly on an existing dirty tree, include all working-tree changes unless told otherwise. Assign each remaining file to one slice, ordering contracts before their callers.
    - If `preview` is set: print the planned `git log --oneline` with file counts, ask whether owner's work or mixed hunks join a slice, and stop for approval.
    _Done when_ every session file belongs to one slice (and `preview` is approved, if set).
 
-2. **Commit.** Record `HEAD` as the **restore point**. For `redo`, run `git reset --soft <base>`. Commit each slice in order with `git commit -- <paths>` (or `git apply --cached` for approved `preview` hunks).
+2. **Commit.** Record `HEAD` as the **restore point**. For `redo`, run `git reset --soft <base>`. Stage any untracked (`??`) files in the slice with `git add -- <paths>`, then commit each slice in order with `git commit -- <paths>` (or `git apply --cached` for approved `preview` hunks).
    _Done when_ every planned slice is a commit.
 
 3. **Verify & receipt.** For `redo`, confirm `git diff --quiet <restore point> HEAD` passes. Confirm owner's work remains untouched in the working tree and each commit matches its slice. For `atomic`, run the narrowest check at each commit with `git rebase --exec`. Print the receipt: rule used, `git log --oneline` of the new commits, any unstaged files left behind, and `git reset <restore point>` to undo safely.
@@ -52,4 +52,4 @@ Every split rule uses this format; the rule only decides the scope.
 - **subject**: imperative mood, lowercase start, no final period, at most 72 characters ("replace plan labels in identity comments").
 - **body**: the why the diff cannot show, wrapped at 72. Cite the decision record or file that holds the reason. Omit the body when the subject says everything.
 - **breaking**: a changed public API or schema contract gets `!` after the scope and a `BREAKING CHANGE:` body line.
-- **trailer**: the attribution lines the session requires.
+- **trailer**: any attribution lines the session requires (omit when none apply).
