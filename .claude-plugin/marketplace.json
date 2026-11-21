@@ -14,7 +14,6 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/core/code-documentation-code-explain",
         "./skills/core/codebase-cleanup-deps-audit",
         "./skills/core/naming-analyzer",
         "./skills/core/scrutinize"

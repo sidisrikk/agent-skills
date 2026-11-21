@@ -10,7 +10,6 @@ Production-ready skills from other authors.
 
 | Skill Name | Description |
 | --- | --- |
-| [**code-documentation-code-explain**](skills/core/code-documentation-code-explain/SKILL.md) | Explains complex code and architecture through clear narratives, step-by-step breakdowns, and visual diagrams. |
 | [**codebase-cleanup-deps-audit**](skills/core/codebase-cleanup-deps-audit/SKILL.md) | Audits project dependencies for known vulnerabilities, license compliance risks, and outdated packages. |
 | [**naming-analyzer**](skills/core/naming-analyzer/SKILL.md) | Evaluates and suggests clearer names for variables, functions, and classes across codebases. |
 | [**scrutinize**](skills/core/scrutinize/SKILL.md) | Reviews plans, designs, PRs, and diffs from an outsider perspective to challenge assumptions and scope. |
