@@ -4,50 +4,32 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 
 ## 🛠️ Available Skills
 
-Skills under [`skills/core-diy/`](skills/core-diy/) are my own. Skills under [`skills/core/`](skills/core/) are cloned from others. Both install under the **Core** group.
+### Core (`skills/core/`)
 
-### 🗳️ Planning, Ideation & Review
-
-| Skill Name | Description |
-| --- | --- |
-| [**scrutinize**](skills/core/scrutinize/SKILL.md) | Reviews plans, designs, PRs, and diffs from an outsider perspective to challenge assumptions and scope. |
-| [**adverse-review**](skills/core-diy/adverse-review/SKILL.md) | Conducts read-only adversarial code review through three independent lenses (Adversary, Auditor, Pragmatist). |
-
-### 🛡️ Code Quality & Conventions
-
-| Skill Name | Description |
-| --- | --- |
-| [**codebase-cleanup-deps-audit**](skills/core/codebase-cleanup-deps-audit/SKILL.md) | Audits project dependencies for known vulnerabilities, license compliance risks, and outdated packages. |
-| [**clean-comments**](skills/core-diy/clean-comments/SKILL.md) | Sweeps a path or repository for comment sediment (plan labels, dead code, stale names/paths) and cleans them after approval. |
-| [**naming-analyzer**](skills/core/naming-analyzer/SKILL.md) | Evaluates and suggests clearer names for variables, functions, and classes across codebases. |
-
-### 🎨 UI Design & Exploration
-
-| Skill Name | Description |
-| --- | --- |
-| [**ascii-ui-explorer**](skills/core-diy/ascii-ui-explorer/SKILL.md) | Generates ASCII wireframes for screens, components, user flows, and responsive UI states without writing code. |
-
-### 📊 Git & Productivity Analytics
-
-| Skill Name | Description |
-| --- | --- |
-| [**git-weekly-report**](skills/core-diy/git-weekly-report/SKILL.md) | Generates git-sourced team updates, sprint summaries, or commit digests filtered by author, date, and audience. |
-| [**split-commits**](skills/core-diy/split-commits/SKILL.md) | Cuts working-tree changes or unpushed commits into clean commits by a single split rule with a rollback receipt. |
-| [**worktime-by-gitlog**](skills/core-diy/worktime-by-gitlog/SKILL.md) | Estimates development time by analyzing git commit timestamps and generates an interactive HTML report with Chart.js. |
-
-### 📄 Documentation & Reverse Engineering
+Production-ready skills from other authors.
 
 | Skill Name | Description |
 | --- | --- |
 | [**code-documentation-code-explain**](skills/core/code-documentation-code-explain/SKILL.md) | Explains complex code and architecture through clear narratives, step-by-step breakdowns, and visual diagrams. |
+| [**codebase-cleanup-deps-audit**](skills/core/codebase-cleanup-deps-audit/SKILL.md) | Audits project dependencies for known vulnerabilities, license compliance risks, and outdated packages. |
+| [**naming-analyzer**](skills/core/naming-analyzer/SKILL.md) | Evaluates and suggests clearer names for variables, functions, and classes across codebases. |
+| [**scrutinize**](skills/core/scrutinize/SKILL.md) | Reviews plans, designs, PRs, and diffs from an outsider perspective to challenge assumptions and scope. |
 
-### ⚙️ Meta-Skills & Agent Orchestration
+### Core Diy (`skills/core-diy/`)
+
+Production-ready skills written for this repository.
 
 | Skill Name | Description |
 | --- | --- |
+| [**adverse-review**](skills/core-diy/adverse-review/SKILL.md) | Conducts read-only adversarial code review through three independent lenses (Adversary, Auditor, Pragmatist). |
+| [**ascii-ui-explorer**](skills/core-diy/ascii-ui-explorer/SKILL.md) | Generates ASCII wireframes for screens, components, user flows, and responsive UI states without writing code. |
+| [**clean-comments**](skills/core-diy/clean-comments/SKILL.md) | Sweeps a path or repository for comment sediment (plan labels, dead code, stale names/paths) and cleans them after approval. |
+| [**git-weekly-report**](skills/core-diy/git-weekly-report/SKILL.md) | Generates git-sourced team updates, sprint summaries, or commit digests filtered by author, date, and audience. |
 | [**normalize-skill**](skills/core-diy/normalize-skill/SKILL.md) | Refactors existing skills into standardized tiers (SKILL.md ≤ 100 lines + REFERENCE.md) for cross-project reuse. |
+| [**split-commits**](skills/core-diy/split-commits/SKILL.md) | Cuts working-tree changes or unpushed commits into clean commits by a single split rule with a rollback receipt. |
+| [**worktime-by-gitlog**](skills/core-diy/worktime-by-gitlog/SKILL.md) | Estimates development time by analyzing git commit timestamps and generates an interactive HTML report with Chart.js. |
 
-### 🚧 Work In Progress (WIP)
+### Wip (`skills/wip/`)
 
 Skills located in [`skills/wip/`](skills/wip/) are actively undergoing design iteration or testing.
 
@@ -66,13 +48,13 @@ Skills located in [`skills/wip/`](skills/wip/) are actively undergoing design it
 ```text
 .
 ├── .claude-plugin/
-│   └── marketplace.json       # Groups skills into `core` (core-diy + core folders) and `wip`
+│   └── marketplace.json       # Maps each skill folder to its installer group
 └── skills/
-    ├── core-diy/              # Production-ready skills I wrote myself
-    │   ├── adverse-review/
-    │   └── ...
     ├── core/                  # Production-ready skills cloned from others
     │   ├── scrutinize/
+    │   └── ...
+    ├── core-diy/              # Production-ready skills I wrote myself
+    │   ├── adverse-review/
     │   └── ...
     └── wip/                   # Work-in-progress and experimental skills
         ├── docker-cve-fix/
@@ -86,7 +68,7 @@ A standard skill directory contains:
 
 ## 🚀 How to Install & Use
 
-Install interactively with Vercel's [`skills`](https://github.com/vercel-labs/skills) CLI (skills appear grouped under **Core** and **Wip**):
+Install interactively with Vercel's [`skills`](https://github.com/vercel-labs/skills) CLI. The picker groups skills under **Core**, **Core Diy**, and **Wip**.
 
 ```bash
 # Interactive grouped picker

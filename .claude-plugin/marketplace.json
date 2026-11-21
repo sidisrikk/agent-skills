@@ -10,19 +10,27 @@
   "plugins": [
     {
       "name": "core",
-      "description": "Production-ready skills for planning, review, code quality, UI design, git analytics, documentation, and agent workflows.",
+      "description": "Production-ready skills sourced from other authors.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/core/code-documentation-code-explain",
+        "./skills/core/codebase-cleanup-deps-audit",
+        "./skills/core/naming-analyzer",
+        "./skills/core/scrutinize"
+      ]
+    },
+    {
+      "name": "core-diy",
+      "description": "Production-ready skills written for this repository.",
       "source": "./",
       "strict": false,
       "skills": [
         "./skills/core-diy/adverse-review",
         "./skills/core-diy/ascii-ui-explorer",
         "./skills/core-diy/clean-comments",
-        "./skills/core/code-documentation-code-explain",
-        "./skills/core/codebase-cleanup-deps-audit",
         "./skills/core-diy/git-weekly-report",
-        "./skills/core/naming-analyzer",
         "./skills/core-diy/normalize-skill",
-        "./skills/core/scrutinize",
         "./skills/core-diy/split-commits",
         "./skills/core-diy/worktime-by-gitlog"
       ]
