@@ -11,6 +11,7 @@ Production-ready skills from other authors.
 | Skill Name | Description |
 | --- | --- |
 | [**codebase-cleanup-deps-audit**](skills/core/codebase-cleanup-deps-audit/SKILL.md) | Audits project dependencies for known vulnerabilities, license compliance risks, and outdated packages. |
+| [**context-engineering**](skills/core/context-engineering/SKILL.md) | Optimizes agent context setup: rules files, session starts, task switches, and recovery when output quality degrades. |
 | [**naming-analyzer**](skills/core/naming-analyzer/SKILL.md) | Evaluates and suggests clearer names for variables, functions, and classes across codebases. |
 | [**scrutinize**](skills/core/scrutinize/SKILL.md) | Reviews plans, designs, PRs, and diffs from an outsider perspective to challenge assumptions and scope. |
 

@@ -15,6 +15,7 @@
       "strict": false,
       "skills": [
         "./skills/core/codebase-cleanup-deps-audit",
+        "./skills/core/context-engineering",
         "./skills/core/naming-analyzer",
         "./skills/core/scrutinize"
       ]
