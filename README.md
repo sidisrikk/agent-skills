@@ -10,7 +10,6 @@ Skills under [`skills/core-diy/`](skills/core-diy/) are my own. Skills under [`s
 
 | Skill Name | Description |
 | --- | --- |
-| [**brainstorming**](skills/core/brainstorming/SKILL.md) | Explores user intent, requirements, and design before implementation. Mandatory before creative work. |
 | [**scrutinize**](skills/core/scrutinize/SKILL.md) | Reviews plans, designs, PRs, and diffs from an outsider perspective to challenge assumptions and scope. |
 | [**adverse-review**](skills/core-diy/adverse-review/SKILL.md) | Conducts read-only adversarial code review through three independent lenses (Adversary, Auditor, Pragmatist). |
 
@@ -41,14 +40,11 @@ Skills under [`skills/core-diy/`](skills/core-diy/) are my own. Skills under [`s
 | Skill Name | Description |
 | --- | --- |
 | [**code-documentation-code-explain**](skills/core/code-documentation-code-explain/SKILL.md) | Explains complex code and architecture through clear narratives, step-by-step breakdowns, and visual diagrams. |
-| [**code-to-prd**](skills/core/code-to-prd/SKILL.md) | Reverse-engineers an existing codebase into a comprehensive Product Requirements Document (PRD). |
-| [**markdown-mermaid-writing**](skills/core/markdown-mermaid-writing/SKILL.md) | Enforces technical writing and diagramming standards with style guides, 24 diagram type references, and templates. |
 
 ### ⚙️ Meta-Skills & Agent Orchestration
 
 | Skill Name | Description |
 | --- | --- |
-| [**init-deep**](skills/core/init-deep/SKILL.md) | Initializes, audits, prunes, and rebuilds sparse hierarchical `AGENTS.md` instructions for maintainable agent memory. |
 | [**normalize-skill**](skills/core-diy/normalize-skill/SKILL.md) | Refactors existing skills into standardized tiers (SKILL.md ≤ 100 lines + REFERENCE.md) for cross-project reuse. |
 
 ### 🚧 Work In Progress (WIP)
@@ -58,7 +54,6 @@ Skills located in [`skills/wip/`](skills/wip/) are actively undergoing design it
 | Skill Name | Description |
 | --- | --- |
 | [**docker-cve-fix**](skills/wip/docker-cve-fix/SKILL.md) | Scans Docker images with Trivy and resolves CVEs by separating base-image toolchains from OS packages. |
-| [**herdr-agy-worker**](skills/wip/herdr-agy-worker/SKILL.md) | Manages bounded `agy` worker lifecycles (spawn, result collection, termination) through Herdr for Orchestra or Lead agents. |
 | [**library-first**](skills/wip/library-first/SKILL.md) | Evaluates repository, platform, and package dependencies before writing custom commodity code. |
 | [**low-cognitive-guidelines**](skills/wip/low-cognitive-guidelines/SKILL.md) | Applies tiered coding principles (deep modules, strong typing, SRP, pure functions) to minimize AI cognitive load. |
 | [**nestjs-zod-swagger-audit**](skills/wip/nestjs-zod-swagger-audit/SKILL.md) | Audits NestJS backend controllers and DTOs for `nestjs-zod` compliance and Swagger OpenAPI decorator coverage. |
@@ -77,12 +72,10 @@ Skills located in [`skills/wip/`](skills/wip/) are actively undergoing design it
     │   ├── adverse-review/
     │   └── ...
     ├── core/                  # Production-ready skills cloned from others
-    │   ├── brainstorming/
-    │   ├── code-to-prd/
+    │   ├── scrutinize/
     │   └── ...
     └── wip/                   # Work-in-progress and experimental skills
         ├── docker-cve-fix/
-        ├── herdr-agy-worker/
         └── ...
 ```
 
