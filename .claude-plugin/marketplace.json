@@ -17,6 +17,7 @@
         "./skills/core/adverse-review",
         "./skills/core/ascii-ui-explorer",
         "./skills/core/brainstorming",
+        "./skills/core/clean-comments",
         "./skills/core/code-documentation-code-explain",
         "./skills/core/code-to-prd",
         "./skills/core/codebase-cleanup-deps-audit",
@@ -26,6 +27,7 @@
         "./skills/core/naming-analyzer",
         "./skills/core/normalize-skill",
         "./skills/core/scrutinize",
+        "./skills/core/split-commits",
         "./skills/core/worktime-by-gitlog"
       ]
     },
@@ -35,7 +37,6 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/wip/clean-comments",
         "./skills/wip/docker-cve-fix",
         "./skills/wip/herdr-agy-worker",
         "./skills/wip/library-first",
@@ -43,7 +44,6 @@
         "./skills/wip/nestjs-zod-swagger-audit",
         "./skills/wip/nx-fullstack-structure",
         "./skills/wip/orca-implement-review",
-        "./skills/wip/split-commits",
         "./skills/wip/verification-gate-review"
       ]
     }

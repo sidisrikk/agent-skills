@@ -17,6 +17,7 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 | Skill Name | Description |
 | --- | --- |
 | [**codebase-cleanup-deps-audit**](skills/core/codebase-cleanup-deps-audit/SKILL.md) | Audits project dependencies for known vulnerabilities, license compliance risks, and outdated packages. |
+| [**clean-comments**](skills/core/clean-comments/SKILL.md) | Sweeps a path or repository for comment sediment (plan labels, dead code, stale names/paths) and cleans them after approval. |
 | [**naming-analyzer**](skills/core/naming-analyzer/SKILL.md) | Evaluates and suggests clearer names for variables, functions, and classes across codebases. |
 
 ### 🎨 UI Design & Exploration
@@ -30,6 +31,7 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 | Skill Name | Description |
 | --- | --- |
 | [**git-weekly-report**](skills/core/git-weekly-report/SKILL.md) | Generates git-sourced team updates, sprint summaries, or commit digests filtered by author, date, and audience. |
+| [**split-commits**](skills/core/split-commits/SKILL.md) | Cuts working-tree changes or unpushed commits into clean commits by a single split rule with a rollback receipt. |
 | [**worktime-by-gitlog**](skills/core/worktime-by-gitlog/SKILL.md) | Estimates development time by analyzing git commit timestamps and generates an interactive HTML report with Chart.js. |
 
 ### 📄 Documentation & Reverse Engineering
@@ -53,7 +55,6 @@ Skills located in [`skills/wip/`](skills/wip/) are actively undergoing design it
 
 | Skill Name | Description |
 | --- | --- |
-| [**clean-comments**](skills/wip/clean-comments/SKILL.md) | Sweeps a path or repository for comment sediment (plan labels, dead code, stale names/paths) and cleans them after approval. |
 | [**docker-cve-fix**](skills/wip/docker-cve-fix/SKILL.md) | Scans Docker images with Trivy and resolves CVEs by separating base-image toolchains from OS packages. |
 | [**herdr-agy-worker**](skills/wip/herdr-agy-worker/SKILL.md) | Manages bounded `agy` worker lifecycles (spawn, result collection, termination) through Herdr for Orchestra or Lead agents. |
 | [**library-first**](skills/wip/library-first/SKILL.md) | Evaluates repository, platform, and package dependencies before writing custom commodity code. |
@@ -61,7 +62,6 @@ Skills located in [`skills/wip/`](skills/wip/) are actively undergoing design it
 | [**nestjs-zod-swagger-audit**](skills/wip/nestjs-zod-swagger-audit/SKILL.md) | Audits NestJS backend controllers and DTOs for `nestjs-zod` compliance and Swagger OpenAPI decorator coverage. |
 | [**nx-fullstack-structure**](skills/wip/nx-fullstack-structure/SKILL.md) | Defines architectural boundaries for Nx monorepos containing React apps, NestJS backends, and shared Zod schemas. |
 | [**orca-implement-review**](skills/wip/orca-implement-review/SKILL.md) | Coordinates an Orca implement → review → judge → fix → commit loop with external worker agents. |
-| [**split-commits**](skills/wip/split-commits/SKILL.md) | Cuts working-tree changes or unpushed commits into clean commits by a single split rule with a rollback receipt. |
 | [**verification-gate-review**](skills/wip/verification-gate-review/SKILL.md) | Assesses verification effort, prioritizes checks, and schedules safe unattended agent tasks. |
 
 ## 📂 Repository Structure
@@ -77,8 +77,8 @@ Skills located in [`skills/wip/`](skills/wip/) are actively undergoing design it
     │   ├── brainstorming/
     │   └── ...
     └── wip/                   # Work-in-progress and experimental skills
-        ├── clean-comments/
         ├── docker-cve-fix/
+        ├── herdr-agy-worker/
         └── ...
 ```
 
