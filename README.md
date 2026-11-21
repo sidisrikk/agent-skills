@@ -10,29 +10,29 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 | --- | --- |
 | [**brainstorming**](skills/core/brainstorming/SKILL.md) | Explores user intent, requirements, and design before implementation. Mandatory before creative work. |
 | [**scrutinize**](skills/core/scrutinize/SKILL.md) | Reviews plans, designs, PRs, and diffs from an outsider perspective to challenge assumptions and scope. |
-| [**adverse-review**](skills/core/adverse-review/SKILL.md) | Conducts read-only adversarial code review through three independent lenses (Adversary, Auditor, Pragmatist). |
+| [**adverse-review**](skills/core-diy/adverse-review/SKILL.md) | Conducts read-only adversarial code review through three independent lenses (Adversary, Auditor, Pragmatist). |
 
 ### 🛡️ Code Quality & Conventions
 
 | Skill Name | Description |
 | --- | --- |
 | [**codebase-cleanup-deps-audit**](skills/core/codebase-cleanup-deps-audit/SKILL.md) | Audits project dependencies for known vulnerabilities, license compliance risks, and outdated packages. |
-| [**clean-comments**](skills/core/clean-comments/SKILL.md) | Sweeps a path or repository for comment sediment (plan labels, dead code, stale names/paths) and cleans them after approval. |
+| [**clean-comments**](skills/core-diy/clean-comments/SKILL.md) | Sweeps a path or repository for comment sediment (plan labels, dead code, stale names/paths) and cleans them after approval. |
 | [**naming-analyzer**](skills/core/naming-analyzer/SKILL.md) | Evaluates and suggests clearer names for variables, functions, and classes across codebases. |
 
 ### 🎨 UI Design & Exploration
 
 | Skill Name | Description |
 | --- | --- |
-| [**ascii-ui-explorer**](skills/core/ascii-ui-explorer/SKILL.md) | Generates ASCII wireframes for screens, components, user flows, and responsive UI states without writing code. |
+| [**ascii-ui-explorer**](skills/core-diy/ascii-ui-explorer/SKILL.md) | Generates ASCII wireframes for screens, components, user flows, and responsive UI states without writing code. |
 
 ### 📊 Git & Productivity Analytics
 
 | Skill Name | Description |
 | --- | --- |
-| [**git-weekly-report**](skills/core/git-weekly-report/SKILL.md) | Generates git-sourced team updates, sprint summaries, or commit digests filtered by author, date, and audience. |
-| [**split-commits**](skills/core/split-commits/SKILL.md) | Cuts working-tree changes or unpushed commits into clean commits by a single split rule with a rollback receipt. |
-| [**worktime-by-gitlog**](skills/core/worktime-by-gitlog/SKILL.md) | Estimates development time by analyzing git commit timestamps and generates an interactive HTML report with Chart.js. |
+| [**git-weekly-report**](skills/core-diy/git-weekly-report/SKILL.md) | Generates git-sourced team updates, sprint summaries, or commit digests filtered by author, date, and audience. |
+| [**split-commits**](skills/core-diy/split-commits/SKILL.md) | Cuts working-tree changes or unpushed commits into clean commits by a single split rule with a rollback receipt. |
+| [**worktime-by-gitlog**](skills/core-diy/worktime-by-gitlog/SKILL.md) | Estimates development time by analyzing git commit timestamps and generates an interactive HTML report with Chart.js. |
 
 ### 📄 Documentation & Reverse Engineering
 
@@ -47,7 +47,7 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 | Skill Name | Description |
 | --- | --- |
 | [**init-deep**](skills/core/init-deep/SKILL.md) | Initializes, audits, prunes, and rebuilds sparse hierarchical `AGENTS.md` instructions for maintainable agent memory. |
-| [**normalize-skill**](skills/core/normalize-skill/SKILL.md) | Refactors existing skills into standardized tiers (SKILL.md ≤ 100 lines + REFERENCE.md) for cross-project reuse. |
+| [**normalize-skill**](skills/core-diy/normalize-skill/SKILL.md) | Refactors existing skills into standardized tiers (SKILL.md ≤ 100 lines + REFERENCE.md) for cross-project reuse. |
 
 ### 🚧 Work In Progress (WIP)
 
@@ -71,10 +71,12 @@ Skills located in [`skills/wip/`](skills/wip/) are actively undergoing design it
 ├── .claude-plugin/
 │   └── marketplace.json       # Groups skills into `core` and `wip` in `skills` CLI & Claude Code
 └── skills/
-    ├── core/                  # Production-ready skills
+    ├── core-diy/              # Production-ready skills I wrote myself
     │   ├── adverse-review/
-    │   ├── ascii-ui-explorer/
+    │   └── ...
+    ├── core/                  # Production-ready skills cloned from others
     │   ├── brainstorming/
+    │   ├── code-to-prd/
     │   └── ...
     └── wip/                   # Work-in-progress and experimental skills
         ├── docker-cve-fix/
