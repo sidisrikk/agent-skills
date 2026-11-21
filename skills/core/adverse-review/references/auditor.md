@@ -9,6 +9,7 @@ Audit technical correctness: does the code produce the promised result for every
 - Empty, singleton, duplicate, extreme, negative, and floating-point inputs where relevant.
 - Concurrency and resource-lifecycle bugs present in the implementation.
 - Algorithms, cleanup paths, and public behavior.
+- Performance under expected load: repeated queries or calls per item, work inside hot loops, and unbounded memory.
 
 Keep the lens on present correctness. Route hostile-input consequences to the Adversary and future change cost to the Pragmatist.
 

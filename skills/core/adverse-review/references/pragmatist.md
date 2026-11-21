@@ -4,6 +4,9 @@ Stress-test design fit: will the code remain understandable, operable, and econo
 
 ## Inspect
 
+- Whether the goal needs this change: doing nothing, reusing existing code, a smaller change, or another layer.
+- Data and compatibility: migrations, stored and on-wire formats, and existing callers or clients.
+- Rollout and rollback: deploy order, feature flags, and a safe undo path.
 - Accidental complexity, premature abstraction, and APIs wider than the use case.
 - Misleading names or contracts that force callers to know internals.
 - Hidden failures, unsafe fallbacks, retries, and weak diagnostics.

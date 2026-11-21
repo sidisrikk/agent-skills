@@ -21,7 +21,7 @@ The **review target** is the selected path or Git range whose behavior is under 
 
 Resolve target paths without following symlinks outside the target. Inspection context may cross the target boundary but must remain within the repository and must not follow symlinks outside it. Review source, tests, configuration, and documentation; omit binaries, generated output, vendored dependencies, and build artifacts unless the user includes them explicitly. If the review target exceeds 250 KB total or any target file exceeds 30 KB, ask the user to narrow it or approve the oversized review.
 
-Derive the concrete behavioral claims made by the target. For each claim, identify its entry point and expected return value or side effect when those exist. For non-executable targets, express claims as externally observable effects or invariants. If no testable claim can be derived, ask the user to provide one before dispatching.
+Derive the concrete behavioral claims made by the target and by any spec the user supplies, such as an epic, issue, or acceptance criteria. Each spec item is a claim; one with no implementing code in the target fails. For each claim, identify its entry point and expected return value or side effect when those exist. For non-executable targets, express claims as externally observable effects or invariants. If no testable claim can be derived, ask the user to provide one before dispatching.
 
 State the review target, inspection-context boundary, and behavioral claims. This step is complete when the target exists, every included path or Git range is explicit, every concrete claim is listed, and the target is within budget or explicitly approved.
 
@@ -93,8 +93,9 @@ Apply these rules in order:
 5. Exclude only contract-invalid outputs, recording each exclusion and reason under `Not checked:`.
 6. Group actionable findings by severity: **Must fix** (`critical`), **Should fix** (`warning`), **Nice to have** (`info`). Within a group, sort by confidence (`cross-validated`, `solo`), then location. Put disputed findings in a separate **Disputed** group, sorted by severity, then location.
 
-Derive the verdict mechanically:
+Derive the verdict mechanically, using the first rule that applies:
 
+- `rework`: more than half of the valid round-one reviews return `reject`; state the shared reason in one line.
 - `fix <numbers> first`: at least one non-disputed critical finding; list every Must fix number.
 - `ship with caveats <numbers>`: at least one non-disputed warning and no non-disputed critical finding; list every Should fix number.
 - `Ship`: no non-disputed critical or warning findings.
@@ -130,7 +131,7 @@ Panel: Auditor <verdict>, Adversary <verdict>, Pragmatist <verdict>. Health: com
    - ...same four parts...
    - **Challenge:** the contradicting evidence in one or two sentences.
 
-Verdict: Ship. | Verdict: ship with caveats 2. | Verdict: fix 1 first.
+Verdict: Ship. | Verdict: ship with caveats 2. | Verdict: fix 1 first. | Verdict: rework: <reason>.
 Lean: -<N> lines possible.   (only when findings remove code)
 Not checked: one line per unresolved question, omitted claim, or excluded review, with its reason.
 ```
