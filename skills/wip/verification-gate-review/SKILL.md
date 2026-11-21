@@ -1,6 +1,7 @@
 ---
 name: verification-gate-review
 description: Review verification effort and value, prioritize checks, or assess safe unattended-work scheduling.
+disable-model-invocation: true
 ---
 
 # Verification Gate Review

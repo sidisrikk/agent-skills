@@ -1,6 +1,7 @@
 ---
 name: git-weekly-report
 description: Use when user wants git-sourced team update, sprint review, or commit recap. Supports author/date/audience filters. Triggered by weekly update, team summary, standup, review period, commit digest.
+disable-model-invocation: true
 ---
 
 # Git Weekly Report

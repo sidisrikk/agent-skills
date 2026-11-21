@@ -1,6 +1,7 @@
 ---
 name: split-commits
 description: Cut working-tree changes or unpushed commits into commits by one split rule (context, kind, layer, feature, refactor-first, mechanical, atomic) with a rollback receipt. Use autonomously at task end or when asked to split, re-cut (`redo`), or `preview` commits.
+disable-model-invocation: true
 ---
 
 # Split commits

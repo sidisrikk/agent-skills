@@ -1,6 +1,7 @@
 ---
 name: orca-implement-review
 description: Coordinate an Orca implement → review → judge → fix → commit loop with external worker agents (antigravity, codex, claude) the user names. Use when the user asks to delegate a fix, a test-report bucket, or a plan to an Orca implementer and then have a different Orca agent review it.
+disable-model-invocation: true
 ---
 
 # Orca implement → review → fix loop

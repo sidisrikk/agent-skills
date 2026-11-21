@@ -2,6 +2,7 @@
 name: nx-fullstack-structure
 description: Use when adding, moving, or reviewing files in an Nx fullstack TypeScript repo with React apps, NestJS apps, workers, shared Zod schemas, Prisma db, feature folders, vertical slices, or import-boundary decisions.
 license: MIT
+disable-model-invocation: true
 ---
 
 # Nx Fullstack Structure

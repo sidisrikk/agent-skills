@@ -1,6 +1,7 @@
 ---
 name: worktime-by-gitlog
 description: Estimates time spent on a project by analyzing git commit timestamps and generates an HTML report with Chart.js visualizations (accumulated hours lines, daily stacked-bar breakdown, session histogram). Use when user asks to calculate, estimate, or visualize time spent on a project, mentions "git time tracking", "how many hours did I work", or wants a time report from git history. Supports multi-author tracking.
+disable-model-invocation: true
 ---
 
 # Worktime by Gitlog

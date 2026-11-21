@@ -4,6 +4,7 @@ description: "You are a dependency security expert specializing in vulnerability
 risk: unknown
 source: community
 date_added: "2026-02-27"
+disable-model-invocation: true
 ---
 
 # Dependency Audit and Security Analysis

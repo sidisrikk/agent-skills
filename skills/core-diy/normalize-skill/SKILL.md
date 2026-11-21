@@ -1,6 +1,7 @@
 ---
 name: normalize-skill
 description: Improves an existing skill file for cross-project reuse by classifying content into generality tiers, normalizing project-specific values into config variables, and enforcing the SKILL.md ≤ 100 line structure with REFERENCE.md split. Use when user wants to improve, normalize, refine, or audit an existing skill, mentions "make skill reusable", "generalize skill", or "refine skill".
+disable-model-invocation: true
 ---
 
 # normalize-skill

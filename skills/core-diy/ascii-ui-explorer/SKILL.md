@@ -1,6 +1,7 @@
 ---
 name: ascii-ui-explorer
 description: ASCII UI exploration for screens, components, flows, states, and responsive variants. Use when the user wants ASCII wireframes, multiple layout options, UI sketches, design iteration, empty/loading/error/success states, or responsive mockups without implementation code.
+disable-model-invocation: true
 ---
 
 # ASCII UI Explorer
