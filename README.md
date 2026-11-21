@@ -4,6 +4,8 @@ Welcome to the **Agent Skills** repository! This project contains a curated coll
 
 ## 🛠️ Available Skills
 
+Skills under [`skills/core-diy/`](skills/core-diy/) are my own. Skills under [`skills/core/`](skills/core/) are cloned from others. Both install under the **Core** group.
+
 ### 🗳️ Planning, Ideation & Review
 
 | Skill Name | Description |
@@ -69,7 +71,7 @@ Skills located in [`skills/wip/`](skills/wip/) are actively undergoing design it
 ```text
 .
 ├── .claude-plugin/
-│   └── marketplace.json       # Groups skills into `core` and `wip` in `skills` CLI & Claude Code
+│   └── marketplace.json       # Groups skills into `core` (core-diy + core folders) and `wip`
 └── skills/
     ├── core-diy/              # Production-ready skills I wrote myself
     │   ├── adverse-review/
