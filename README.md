@@ -53,27 +53,33 @@ Skills located in [`skills/wip/`](skills/wip/) are actively undergoing design it
 
 | Skill Name | Description |
 | --- | --- |
+| [**clean-comments**](skills/wip/clean-comments/SKILL.md) | Sweeps a path or repository for comment sediment (plan labels, dead code, stale names/paths) and cleans them after approval. |
 | [**docker-cve-fix**](skills/wip/docker-cve-fix/SKILL.md) | Scans Docker images with Trivy and resolves CVEs by separating base-image toolchains from OS packages. |
 | [**herdr-agy-worker**](skills/wip/herdr-agy-worker/SKILL.md) | Manages bounded `agy` worker lifecycles (spawn, result collection, termination) through Herdr for Orchestra or Lead agents. |
 | [**library-first**](skills/wip/library-first/SKILL.md) | Evaluates repository, platform, and package dependencies before writing custom commodity code. |
 | [**low-cognitive-guidelines**](skills/wip/low-cognitive-guidelines/SKILL.md) | Applies tiered coding principles (deep modules, strong typing, SRP, pure functions) to minimize AI cognitive load. |
 | [**nestjs-zod-swagger-audit**](skills/wip/nestjs-zod-swagger-audit/SKILL.md) | Audits NestJS backend controllers and DTOs for `nestjs-zod` compliance and Swagger OpenAPI decorator coverage. |
 | [**nx-fullstack-structure**](skills/wip/nx-fullstack-structure/SKILL.md) | Defines architectural boundaries for Nx monorepos containing React apps, NestJS backends, and shared Zod schemas. |
+| [**orca-implement-review**](skills/wip/orca-implement-review/SKILL.md) | Coordinates an Orca implement → review → judge → fix → commit loop with external worker agents. |
+| [**split-commits**](skills/wip/split-commits/SKILL.md) | Cuts working-tree changes or unpushed commits into clean commits by a single split rule with a rollback receipt. |
 | [**verification-gate-review**](skills/wip/verification-gate-review/SKILL.md) | Assesses verification effort, prioritizes checks, and schedules safe unattended agent tasks. |
 
 ## 📂 Repository Structure
 
 ```text
-skills/
-├── core/                  # Production-ready skills
-│   ├── adverse-review/
-│   ├── ascii-ui-explorer/
-│   ├── brainstorming/
-│   └── ...
-└── wip/                   # Work-in-progress and experimental skills
-    ├── docker-cve-fix/
-    ├── herdr-agy-worker/
-    └── ...
+.
+├── .claude-plugin/
+│   └── marketplace.json       # Groups skills into `core` and `wip` in `skills` CLI & Claude Code
+└── skills/
+    ├── core/                  # Production-ready skills
+    │   ├── adverse-review/
+    │   ├── ascii-ui-explorer/
+    │   ├── brainstorming/
+    │   └── ...
+    └── wip/                   # Work-in-progress and experimental skills
+        ├── clean-comments/
+        ├── docker-cve-fix/
+        └── ...
 ```
 
 A standard skill directory contains:
@@ -81,6 +87,19 @@ A standard skill directory contains:
 - `REFERENCE.md` / `README.md`: Detailed guides, examples, and deep reference material (optional).
 - `scripts/` / `references/` / `templates/`: Supporting execution scripts, prompt lenses, or templates (optional).
 
-## 🚀 How to Use
+## 🚀 How to Install & Use
 
-When interacting with your AI agent, activate a skill by mentioning its name or using your environment's skill invocation mechanism (e.g., `activate_skill` in Gemini CLI, or referencing `SKILL.md` directly).
+Install interactively with Vercel's [`skills`](https://github.com/vercel-labs/skills) CLI (skills appear grouped under **Core** and **Wip**):
+
+```bash
+# Interactive grouped picker
+npx skills add sidisrikk/agent-skills
+
+# Preview grouped skills without installing
+npx skills add sidisrikk/agent-skills --list
+
+# Install specific skills directly
+npx skills add sidisrikk/agent-skills --skill adverse-review --skill scrutinize
+```
+
+When interacting with your AI agent, activate an installed skill by mentioning its name or using your agent's skill invocation mechanism.
