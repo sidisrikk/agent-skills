@@ -1,26 +1,32 @@
 ---
 name: split-commits
-description: Cut working-tree changes or unpushed commits into commits by one split rule (context, kind, layer, feature, refactor-first, mechanical, atomic) with a rollback receipt. Use autonomously at task end or when asked to split, re-cut (`redo`), or `preview` commits.
+description: Split working-tree changes or re-cut unpushed commits by a chosen rule, with an optional preview and an undo receipt.
 disable-model-invocation: true
 ---
 
 # Split commits
 
-A **split rule** cuts one change into commits; each commit is one **slice** of that rule. Pick the rule for the question `git log` must answer later. Default to autonomous 1-pass execution and print a safe undo receipt.
+A **split rule** groups changes into **slices**. Each slice becomes one commit. Pick the rule for the question `git log` must answer later.
 
-Arguments: an optional rule from [Split rules](#split-rules) (defaults to `context` when uncertain), `redo` to re-cut unpushed commits, and `preview` to stop for approval before committing.
+Pass a [split rule](#split-rules), `redo`, `preview`, or a combination. Default to `context` when uncertain.
 
 ## Steps
 
-1. **Plan & guard.** List the changes. For `redo`, pick the base (parent of the oldest commit to re-cut) and hard-stop if `git branch -r --contains` is non-empty for any commit after it. When invoked at task end, mark changes not made this session as **owner's work** and keep owner's work plus mixed files unstaged; when invoked directly on an existing dirty tree, include all working-tree changes unless told otherwise. Assign each remaining file to one slice, ordering contracts before their callers.
-   - If `preview` is set: print the planned `git log --oneline` with file counts, ask whether owner's work or mixed hunks join a slice, and stop for approval.
-   _Done when_ every session file belongs to one slice (and `preview` is approved, if set).
+1. **Plan.** Inspect staged, unstaged, and untracked changes. Follow the scope the user gave. For a task-end request, include this session's changes and leave other work in place. For a general request to split the working tree, include all changes within the user's scope. If a file has both staged and unstaged edits or mixes in-scope and out-of-scope hunks, leave it out until the user approves what to commit and how to handle any staged edits.
+   - For `redo`, choose the parent of the oldest commit to re-cut as the base. Require a clean index and working tree, including untracked files. Stop if `git branch -r --contains <commit>` lists a remote-tracking branch for any commit in `<base>..HEAD`. Plan from the diff between the base and `HEAD`.
+   - Order slices so contracts precede their callers. The plan is complete when every change in the requested scope belongs to exactly one slice or has an exclusion reason.
+   - For `preview`, show the proposed commit subjects, file counts, exclusions, and any hunks that need a decision. End the preview before changing Git state. After approval, recheck `HEAD`, the index, and the planned changes. If any differ from the approved plan, show an updated preview and wait for approval.
 
-2. **Commit.** Record `HEAD` as the **restore point**. For `redo`, run `git reset --soft <base>`. Stage any untracked (`??`) files in the slice with `git add -- <paths>`, then commit each slice in order with `git commit -- <paths>` (or `git apply --cached` for approved `preview` hunks).
-   _Done when_ every planned slice is a commit.
+2. **Save the restore point.** Before changing Git state, record the current branch (or detached `HEAD`) and the `HEAD` commit. Copy the active index to a durable location outside the working tree, or record that the index was absent. Resolve its path with `git rev-parse --git-path index`. If a commit or verification step fails, check that the branch and `HEAD` still match the state reached by this run. Then run `git reset --soft <restore-point>` and restore the saved index, including its absence if applicable. If the branch or `HEAD` changed outside this run, report the restore point and index backup for manual recovery.
 
-3. **Verify & receipt.** For `redo`, confirm `git diff --quiet <restore point> HEAD` passes. Confirm owner's work remains untouched in the working tree and each commit matches its slice. For `atomic`, run the narrowest check at each commit with `git rebase --exec`. Print the receipt: rule used, `git log --oneline` of the new commits, any unstaged files left behind, and `git reset <restore point>` to undo safely.
-   _Done when_ all checks pass and the receipt is printed—or on failure, abort any active rebase, run `git reset <restore point>`, and report the error.
+3. **Commit.** For `redo`, run `git reset --mixed <base>` to expose the changes as unstaged edits while keeping the working-tree files in place. Process slices in plan order.
+   - **Full files.** Stage new paths with `git add -- <paths>`. Commit the slice with `git commit -- <paths>`. The path-limited commit takes the working-tree versions of those files.
+   - **Slices with approved hunks.** Seed a temporary index from `HEAD` with `GIT_INDEX_FILE=<temp-index> git read-tree HEAD`. Under that index, use `git apply --cached` for the approved hunks and `git add -A -- <paths>` for any full files in the slice. Verify the staged diff matches the slice exactly, then commit under the same index. Update the real index for the committed paths with `git reset HEAD -- <paths>` to leave the remaining hunks unstaged. For partial files with staged edits, require the user's approval to replace their staged state with the committed version.
+   - This step is complete when every planned slice has a commit.
+
+4. **Verify and print the receipt.** Check that each commit matches its planned slice and excluded changes retain their working-tree content and staged state. For `redo`, require `git diff --quiet <restore-point> HEAD` to pass. For `atomic`, run the narrowest relevant check at each new commit in a temporary detached worktree.
+   - Print the rule, `git log --oneline <base>..HEAD` (use the restore point as the base for a working-tree split), and any changes left outside the commits.
+   - Include the branch, final `HEAD`, restore point, and index backup location or original absence. Record the final staged diff so the user can check it before undoing. If the branch, `HEAD`, and staged diff still match, use the recovery procedure in step 2 to restore the original tip and staged state while keeping working-tree files in place.
 
 ## Split rules
 
