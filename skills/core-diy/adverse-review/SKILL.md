@@ -1,6 +1,6 @@
 ---
 name: adverse-review
-description: 'Adversarial end-to-end code review through three independent lenses, with optional cross-review.'
+description: "Adversarial end-to-end code review through three independent lenses, with optional cross-review."
 disable-model-invocation: true
 ---
 
@@ -21,7 +21,7 @@ The **review target** is the selected path or Git range whose behavior is under 
 
 Resolve target paths without following symlinks outside the target. Inspection context may cross the target boundary but must remain within the repository and must not follow symlinks outside it. Review source, tests, configuration, and documentation; omit binaries, generated output, vendored dependencies, and build artifacts unless the user includes them explicitly. If the review target exceeds 250 KB total or any target file exceeds 30 KB, ask the user to narrow it or approve the oversized review.
 
-Derive the concrete behavioral claims made by the target and by any spec the user supplies, such as an epic, issue, or acceptance criteria. Each spec item is a claim; one with no implementing code in the target fails. For each claim, identify its entry point and expected return value or side effect when those exist. For non-executable targets, express claims as externally observable effects or invariants. If no testable claim can be derived, ask the user to provide one before dispatching.
+Derive the concrete behavioral claims made by the target. For each claim, identify its entry point and expected return value or side effect when those exist. For non-executable targets, express claims as externally observable effects or invariants. If no testable claim can be derived, ask the user to provide one before dispatching.
 
 State the review target, inspection-context boundary, and behavioral claims. This step is complete when the target exists, every included path or Git range is explicit, every concrete claim is listed, and the target is within budget or explicitly approved.
 
@@ -59,7 +59,10 @@ Findings:
   Trace: compact entry-to-effect path and the concrete input or state that exposes it
   Mechanism: how the issue occurs
   Impact: concrete consequence
-  Fix: smallest credible remediation
+  Fix:
+    Quick: patch that stops the traced failure now, and what it leaves open
+    Standard: root-cause fix with a regression test
+    Long-term: design change that prevents this defect class, and the future change it keeps cheap
 ```
 
 **Coverage:** List every lens-relevant claim exactly once, traced end to end. `Coverage: none` is valid only when no supplied claim is relevant. Each `fails` result maps to a finding; when the finding limit is reached, name every omitted failed claim in `Summary`.
@@ -67,6 +70,14 @@ Findings:
 **Traces:** Every coverage or finding trace names concrete symbols or locations and reaches the observed return value or side effect.
 
 **Findings:** Use the finding schema above, with at most 10 findings per reviewer in severity order, retaining the highest-severity findings. `Findings: none` is valid. The trace and finding requirements also govern cross-review additions.
+
+**Fix tiers:** Every finding gives three distinct fixes, each one concrete change in one or two sentences:
+
+- `Quick`: the smallest patch that makes the traced input behave correctly today. It may leave the root cause or neighbouring inputs exposed; name what it leaves open.
+- `Standard`: fixes the root cause for every input the target supports and adds a regression test for the traced input. This is what a careful reviewer would merge.
+- `Long-term`: reshapes the code so this class of defect cannot recur, and names the likely future change it keeps cheap. It may touch more files than the target.
+
+When a tier has no genuinely distinct option, write `Same as <tier>: <reason>` for it.
 
 **Validity:** Every required field, value, enum, location, ordering rule, and limit must satisfy the contract.
 
@@ -86,21 +97,20 @@ When the user explicitly requests two rounds, cross-review, or a deep adverse re
 
 Apply these rules in order:
 
-1. Merge findings only when they identify the same root cause at the same location; preserve every reporter and distinct trace that demonstrates the cause. Record failed claims omitted by a reviewer under `Not checked:`.
+1. Merge findings only when they identify the same root cause at the same location; preserve every reporter and distinct trace that demonstrates the cause. When merged reports propose different fixes, keep the most concrete option per tier. Record failed claims omitted by a reviewer under `Not checked:`.
 2. Mark a finding **disputed** when a round-two challenge cites concrete contradictory evidence. Record unsupported challenges as excluded rather than changing confidence.
 3. Otherwise mark a finding **cross-validated** when at least two lenses found it independently, or another lens validates it in round two.
 4. Mark every other actionable finding **solo**.
 5. Exclude only contract-invalid outputs, recording each exclusion and reason under `Not checked:`.
 6. Group actionable findings by severity: **Must fix** (`critical`), **Should fix** (`warning`), **Nice to have** (`info`). Within a group, sort by confidence (`cross-validated`, `solo`), then location. Put disputed findings in a separate **Disputed** group, sorted by severity, then location.
 
-Derive the verdict mechanically, using the first rule that applies:
+Derive the verdict mechanically:
 
-- `rework`: more than half of the valid round-one reviews return `reject`; state the shared reason in one line.
 - `fix <numbers> first`: at least one non-disputed critical finding; list every Must fix number.
 - `ship with caveats <numbers>`: at least one non-disputed warning and no non-disputed critical finding; list every Should fix number.
 - `Ship`: no non-disputed critical or warning findings.
 
-Write the report in very simple English: short sentences, everyday words. Explain a technical term the first time you use it. The reader may never have seen this code. Number findings across all groups, so the user can say "fix 2 and 5". Skip empty groups. Every finding has all four parts, each one or two short sentences; **Problem** must name the concrete input or state and the path it takes to the wrong result, drawn from the reviewers' traces.
+Write the report in very simple English: short sentences, everyday words. Explain a technical term the first time you use it. The reader may never have seen this code. Number findings across all groups, so the user can say "fix 2 and 5" or "fix 2 standard". Skip empty groups. Every finding has all four parts, each part and each fix option one or two short sentences; **Problem** must name the concrete input or state and the path it takes to the wrong result, drawn from the reviewers' traces.
 
 Use this report shape:
 
@@ -114,7 +124,10 @@ Panel: Auditor <verdict>, Adversary <verdict>, Pragmatist <verdict>. Health: com
 1. **Orders land on the wrong day** (`billing/close_day.py:L40-52`) · cross-validated: Auditor, Adversary
    - **What this is:** At midnight this job closes the day and bills all orders of that day.
    - **Problem:** It takes "today" from the server clock, which runs in UTC. An order placed at 00:30 in Berlin goes `close_day()` -> `bill(today)` and is billed on the day before.
-   - **Fix:** Compute the day once in the shop's time zone. One line, nothing else changes.
+   - **Fix:**
+     - **Quick:** Hardcode Berlin time in `close_day()`. Leaves shops in other time zones wrong.
+     - **Standard:** Read the shop's time zone from its settings, compute the day once, and pass it to `bill()`. Add a test for an order at 00:30.
+     - **Long-term:** Add one `business_day(shop, time)` helper that every job uses. A new country or a new nightly job then needs no date code of its own.
    - **If we skip it:** Late orders show the wrong date, and accounting fixes them by hand.
 
 **Should fix**
@@ -131,8 +144,8 @@ Panel: Auditor <verdict>, Adversary <verdict>, Pragmatist <verdict>. Health: com
    - ...same four parts...
    - **Challenge:** the contradicting evidence in one or two sentences.
 
-Verdict: Ship. | Verdict: ship with caveats 2. | Verdict: fix 1 first. | Verdict: rework: <reason>.
-Lean: -<N> lines possible.   (only when findings remove code)
+Verdict: Ship. | Verdict: ship with caveats 2. | Verdict: fix 1 first.
+Lean: -<N> lines possible. (only when findings remove code)
 Not checked: one line per unresolved question, omitted claim, or excluded review, with its reason.
 ```
 
